@@ -1,0 +1,124 @@
+<!--
+  ~ The main contributor to this project is Institute of Materials Research,
+  ~ Helmholtz-Zentrum Geesthacht,
+  ~ Germany.
+  ~
+  ~ This project is a contribution of the Helmholtz Association Centres and
+  ~ Technische Universitaet Muenchen to the ESS Design Update Phase.
+  ~
+  ~ The project's funding reference is FKZ05E11CG1.
+  ~
+  ~ Copyright (c) 2012. Institute of Materials Research,
+  ~ Helmholtz-Zentrum Geesthacht,
+  ~ Germany.
+  ~
+  ~ This program is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU General Public License
+  ~ as published by the Free Software Foundation; either version 2
+  ~ of the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program; if not, write to the Free Software
+  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+  -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>IDL2Java Tango Client</title>
+</head>
+<body>
+<h1>
+    General overview:
+</h1>
+<p>
+    Using this library one can easily manipulate Tango servers from within IDL scripts (see some examples below).
+</p>
+<h1>
+    Before using:
+</h1>
+    <ol>
+        <li>Read "Importing into IDL" from bridges.pdf (typically located in {IDL_ROOT}\help\pdf\bridges.pdf)</li>
+        <li>Obtain IDLTangoJavaClient-{version}.jar and copy it somewhere in the local file system</li>
+        <li>Adjust idl-java bridge settings (usually only classpath needs to be updated in idljavabrc configuration file)</li>
+        <li>Setup environment variable that points to the config file (idljavabrc)*</li>
+    </ol>
+<p>
+    * - this can be done in the idl programmaticaly: SETENV, 'IDLJAVAB_CONFIG=D:\MyProjects\IDLWorkspace8\StatusServerIDL\idljavabrc'
+</p>
+<h1>
+    Usage example:
+</h1>
+    <pre>
+        pro TangoClient
+        ;set IDLJAVAB_CONFIG for this session
+  SETENV, 'IDLJAVAB_CONFIG=D:\MyProjects\IDLWorkspace8\StatusServerIDL\idljavabrc'
+
+        ;create proxy object
+    joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy", "sys/tg_test/1")
+
+  ;wait until it is running
+  joDeviceProxy->waitUntil, "running"
+
+  ;assume that device is in 'fault' state
+  ;wait until it is no longer fault
+  ;joDeviceProxy->waitUntilNot, "fault"
+
+  ;write/read string scalar
+  joDeviceProxy->writeAttribute, "string_scalar", "Hello World!!!"
+  string = joDeviceProxy->readAttributeString("string_scalar")
+  PRINT, string ;Hello World!!!
+
+  integer = joDeviceProxy->readAttributeInteger("long_scalar")
+  PRINT, integer ;some integer
+
+  ;write/read double image
+  joDeviceProxy->writeAttribute, "double_image", DBLARR(3, 2)
+  dblImage = joDeviceProxy->readAttribute("double_image")
+  PRINT, dblImage ;3x2 0.0
+
+  ;execute command
+  dblArr = joDeviceProxy->executeCommand( "DevVarDoubleArray", DBLARR(3,1))
+  PRINT, dblArr ;three 0.0
+
+  ;execute command
+  shtArr = joDeviceProxy->executeCommand( "DevVarShortArray", INTARR(3,1))
+  PRINT, shtArr ;three 0.0
+
+  ;write/read double scalar
+  joDeviceProxy->writeAttribute, "double_scalar_w", 3.14D
+  dbl = joDeviceProxy->readAttributeDouble("double_scalar_w")
+  PRINT, dbl ;3.14
+
+  ;execute command
+  dblArr = joDeviceProxy->executeCommand( "DevVarDoubleArray", DBLARR(3,1))
+  PRINT, dblArr ;three 0.0
+
+  ;execute command
+  joObject = joDeviceProxy->executeCommand( "DevString", "Hello World, Again!!!")
+  PRINT, joObject->toString() ;Hello World, Again!!!
+
+  ;execute void command
+  joObject = joDeviceProxy->executeCommand( "DevVoid" )
+  PRINT, joObject ;null
+
+  ;write/read double array
+  joDeviceProxy->writeAttribute, "double_spectrum", DBLARR(5, 1)
+  dblArr = joDeviceProxy->readAttribute("double_spectrum")
+  PRINT, dblArr ;five 0.0
+
+  ;catch exception
+  ;joDeviceProxy->readAttribute, "throw_exception"
+
+  ; delete the object
+  OBJ_DESTROY, joDeviceProxy, joObject
+end
+    </pre>
+</body>
+</html>
