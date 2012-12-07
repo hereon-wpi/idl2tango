@@ -34,6 +34,8 @@ import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.TangoProxyException;
 import wpn.hdri.tango.proxy.TangoProxyWrapper;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * This class provides simplified interface of {@link fr.esrf.TangoApi.DeviceProxy} to be used through IDL Java importing
  * It also adds a couple of new features such as {@link this#waitUntil}
@@ -67,6 +69,8 @@ public class IDLDeviceProxy {
     private final TangoDeviceCommandExecutor executor;
     private final TangoDevStateAwaitor awaitor;
 
+    private final AtomicReference<Throwable> lastException = new AtomicReference<Throwable>(new Exception("No exceptions so far."));
+
     /**
      * Creates a new instance of the IDLDeviceProxy.
      *
@@ -91,6 +95,10 @@ public class IDLDeviceProxy {
         }
     }
 
+    public String getExceptionMessage(){
+        return lastException.get().getMessage();
+    }
+
     // Temporarily placed here
     public void simulateExperiment(String receiver, int nIterations, long timeout){
         try{
@@ -108,6 +116,7 @@ public class IDLDeviceProxy {
 
             //ss.executeCommand("stopCollectData",null);
         } catch(Throwable ex){
+            lastException.set(ex);
             throw handler.handle(ex);
         }
     }
@@ -134,6 +143,7 @@ public class IDLDeviceProxy {
             EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
             awaitor.waitUntil(targetDevState);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -156,6 +166,7 @@ public class IDLDeviceProxy {
             EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
             awaitor.waitUntilNot(targetDevState);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -181,6 +192,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -202,6 +214,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -223,6 +236,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -244,6 +258,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -265,6 +280,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -286,6 +302,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -307,6 +324,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -328,6 +346,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -349,6 +368,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -370,6 +390,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -391,6 +412,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -412,6 +434,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -427,6 +450,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -448,6 +472,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -469,6 +494,7 @@ public class IDLDeviceProxy {
         try {
             return executor.command_inout(command, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -495,6 +521,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttribute(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -517,6 +544,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeFloat(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -539,6 +567,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeLong(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -561,6 +590,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeShort(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -583,6 +613,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeDouble(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -605,6 +636,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeInteger(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -626,6 +658,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeState();
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -648,6 +681,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeString(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -670,6 +704,7 @@ public class IDLDeviceProxy {
         try {
             return reader.readAttributeBoolean(attname);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -696,6 +731,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -717,6 +753,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -738,6 +775,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -759,6 +797,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -780,6 +819,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -801,6 +841,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -822,6 +863,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -843,6 +885,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -864,6 +907,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -885,6 +929,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -906,6 +951,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -927,6 +973,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -948,6 +995,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -969,6 +1017,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -990,6 +1039,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1011,6 +1061,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1032,6 +1083,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1053,6 +1105,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1074,6 +1127,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1095,6 +1149,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1116,6 +1171,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1137,6 +1193,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1158,6 +1215,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1179,6 +1237,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
@@ -1200,6 +1259,7 @@ public class IDLDeviceProxy {
         try {
             writer.writeAttribute(name, value);
         } catch (Throwable e) {
+            lastException.set(e);
             throw handler.handle(e);
         }
     }
