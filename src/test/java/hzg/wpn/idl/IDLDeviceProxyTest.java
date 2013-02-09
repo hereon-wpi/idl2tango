@@ -256,4 +256,13 @@ public class IDLDeviceProxyTest {
         assertTrue(awaited > 409343233);
         System.out.println("nano seconds awaited:" + awaited);
     }
+
+    @Test
+    public void testSetTimeout(){
+        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+
+        instance.setTimeout(9000);
+
+        //assume that if nothing bad has happened everything is fine
+    }
 }
