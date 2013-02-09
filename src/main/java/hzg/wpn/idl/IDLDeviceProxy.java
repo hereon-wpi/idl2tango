@@ -99,6 +99,21 @@ public class IDLDeviceProxy {
         return lastException.get().getMessage();
     }
 
+    /**
+     *
+     * @param timeout in milliseconds
+     */
+    public void setTimeout(int timeout){
+        try {
+            Object wrapped = proxy.getClass().getField("proxy").get(proxy);
+
+            wrapped.getClass().getMethod("set_timeout_millis",int.class).invoke(wrapped,timeout);
+        } catch (Throwable ex) {
+            lastException.set(ex);
+            throw handler.handle(ex);
+        }
+    }
+
     // Temporarily placed here
     public void simulateExperiment(String receiver, int nIterations, long timeout){
         try{
