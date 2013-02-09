@@ -34,6 +34,7 @@ import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.TangoProxyException;
 import wpn.hdri.tango.proxy.TangoProxyWrapper;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -105,9 +106,12 @@ public class IDLDeviceProxy {
      */
     public void setTimeout(int timeout){
         try {
-            Object wrapped = proxy.getClass().getField("proxy").get(proxy);
+            Field field = proxy.getClass().getDeclaredField("proxy");
+            field.setAccessible(true);
+            Object wrapped = field.get(proxy);
 
             wrapped.getClass().getMethod("set_timeout_millis",int.class).invoke(wrapped,timeout);
+            field.setAccessible(false);
         } catch (Throwable ex) {
             lastException.set(ex);
             throw handler.handle(ex);
