@@ -31,8 +31,8 @@ package hzg.wpn.idl;
 
 import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
+import wpn.hdri.tango.proxy.TangoProxy;
 import wpn.hdri.tango.proxy.TangoProxyException;
-import wpn.hdri.tango.proxy.TangoProxyWrapper;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -43,11 +43,11 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
 
     @Override
     public void waitUntil(EnumDevState targetState) {
-        while(true){
+        while (true) {
             try {
                 pollCrtState();
                 //do not wait if state are the same
-                if(targetStateReached(targetState)){
+                if (targetStateReached(targetState)) {
                     return;
                 } else {
                     Thread.sleep(SLEEP_GRANULARITY);
@@ -63,11 +63,11 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     public void waitUntilNot(EnumDevState targetState) {
-        while(true){
+        while (true) {
             try {
                 pollCrtState();
                 //wait if states are the same
-                if(targetStateReached(targetState)){
+                if (targetStateReached(targetState)) {
                     Thread.sleep(SLEEP_GRANULARITY);
                 } else {
                     return;
@@ -87,7 +87,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
         setCrtDevState(crtState);
     }
 
-    public PollDevStateAwaitor(TangoProxyWrapper proxy, Logger log, TangoProxyExceptionHandler handler) {
+    public PollDevStateAwaitor(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
         super(log, proxy, handler);
     }
 }

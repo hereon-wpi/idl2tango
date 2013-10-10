@@ -31,19 +31,19 @@ package hzg.wpn.idl;
 
 import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
+import wpn.hdri.tango.proxy.TangoProxy;
 import wpn.hdri.tango.proxy.TangoProxyException;
-import wpn.hdri.tango.proxy.TangoProxyWrapper;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 05.06.12
  */
 public class TangoDeviceAttributeReader {
-    private final TangoProxyWrapper proxy;
+    private final TangoProxy proxy;
     private final Logger log;
     private final TangoProxyExceptionHandler handler;
 
-    public TangoDeviceAttributeReader(TangoProxyWrapper proxy, Logger log, TangoProxyExceptionHandler handler) {
+    public TangoDeviceAttributeReader(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
         this.proxy = proxy;
         this.log = log;
         this.handler = handler;
@@ -59,7 +59,7 @@ public class TangoDeviceAttributeReader {
 
     public boolean readAttributeBoolean(String attname) {
         try {
-            return (Boolean)proxy.readAttribute(attname);
+            return (Boolean) proxy.readAttribute(attname);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
@@ -83,7 +83,7 @@ public class TangoDeviceAttributeReader {
 
     public int readAttributeInteger(String attname) {
         try {
-            return (Integer)proxy.readAttribute(attname);
+            return (Integer) proxy.readAttribute(attname);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
@@ -91,7 +91,7 @@ public class TangoDeviceAttributeReader {
 
     public long readAttributeLong(String attname) {
         try {
-            return (Long)proxy.readAttribute(attname);
+            return (Long) proxy.readAttribute(attname);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
@@ -99,7 +99,7 @@ public class TangoDeviceAttributeReader {
 
     public float readAttributeFloat(String attname) {
         try {
-            return (Float)proxy.readAttribute(attname);
+            return (Float) proxy.readAttribute(attname);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
@@ -107,7 +107,7 @@ public class TangoDeviceAttributeReader {
 
     public double readAttributeDouble(String attname) {
         try {
-            return (Double)proxy.readAttribute(attname);
+            return (Double) proxy.readAttribute(attname);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
@@ -115,7 +115,7 @@ public class TangoDeviceAttributeReader {
 
     public String readAttributeState() {
         try {
-            return ((EnumDevState)proxy.readAttribute("State")).name();
+            return ((EnumDevState) proxy.readAttribute("State")).name();
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }

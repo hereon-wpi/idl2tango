@@ -30,19 +30,19 @@
 package hzg.wpn.idl;
 
 import org.apache.log4j.Logger;
+import wpn.hdri.tango.proxy.TangoProxy;
 import wpn.hdri.tango.proxy.TangoProxyException;
-import wpn.hdri.tango.proxy.TangoProxyWrapper;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 05.06.12
  */
 public class TangoDeviceAttributeWriter {
-    private final TangoProxyWrapper proxy;
+    private final TangoProxy proxy;
     private final Logger log;
     private final TangoProxyExceptionHandler handler;
 
-    public TangoDeviceAttributeWriter(TangoProxyWrapper proxy, Logger log, TangoProxyExceptionHandler handler) {
+    public TangoDeviceAttributeWriter(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
         this.proxy = proxy;
         this.log = log;
         this.handler = handler;

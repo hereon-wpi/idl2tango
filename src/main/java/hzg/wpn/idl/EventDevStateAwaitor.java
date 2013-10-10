@@ -40,7 +40,8 @@ import wpn.hdri.tango.proxy.*;
 public class EventDevStateAwaitor extends TangoDevStateAwaitor {
 
     private final Object internalLock = new Object();
-    public EventDevStateAwaitor(TangoProxyWrapper proxy, Logger log, TangoProxyExceptionHandler handler) {
+
+    public EventDevStateAwaitor(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
         super(log, proxy, handler);
     }
 
@@ -51,8 +52,8 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             setCrtDevState(crtState);
 
             int eventId = subscribeToStateChange();
-            synchronized (internalLock){
-                while(!targetStateReached(targetState)){
+            synchronized (internalLock) {
+                while (!targetStateReached(targetState)) {
                     internalLock.wait();
                 }
             }
@@ -67,14 +68,14 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     @Override
-    public void waitUntilNot(EnumDevState targetState){
+    public void waitUntilNot(EnumDevState targetState) {
         try {
             EnumDevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);
 
             int eventId = subscribeToStateChange();
-            synchronized (internalLock){
-                while(targetStateReached(targetState)){
+            synchronized (internalLock) {
+                while (targetStateReached(targetState)) {
                     internalLock.wait();
                 }
             }
@@ -89,14 +90,15 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     private volatile Throwable error = null;
+
     private int subscribeToStateChange() throws TangoProxyException {
         final Thread mainThread = Thread.currentThread();
-        return getProxy().subscribeEvent(STATE, TangoEvent.CHANGE,new TangoEventCallback<EnumDevState>() {
+        return getProxy().subscribeEvent(STATE, TangoEvent.CHANGE, new TangoEventCallback<EnumDevState>() {
             @Override
             public void onEvent(EventData<EnumDevState> eventData) {
                 EnumDevState crtState = eventData.getValue();
-                if(crtState == null) return;
-                synchronized (internalLock){
+                if (crtState == null) return;
+                synchronized (internalLock) {
                     setCrtDevState(crtState);
                     internalLock.notifyAll();
                 }

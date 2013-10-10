@@ -31,8 +31,10 @@ package hzg.wpn.idl;
 
 import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
+import wpn.hdri.tango.proxy.DevSource;
+import wpn.hdri.tango.proxy.TangoProxies;
+import wpn.hdri.tango.proxy.TangoProxy;
 import wpn.hdri.tango.proxy.TangoProxyException;
-import wpn.hdri.tango.proxy.TangoProxyWrapper;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 05.06.12
  */
 public class IDLDeviceProxy {
-    private static final Logger log = new Logger(IDLDeviceProxy.class.getSimpleName()){
+    private static final Logger log = new Logger(IDLDeviceProxy.class.getSimpleName()) {
         @Override
         public void info(Object message) {
             System.out.println(message);
@@ -64,30 +66,30 @@ public class IDLDeviceProxy {
     };
     private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler(log);
 
-    private final TangoProxyWrapper proxy;
+    private final TangoProxy proxy;
     private final TangoDeviceAttributeReader reader;
     private final TangoDeviceAttributeWriter writer;
     private final TangoDeviceCommandExecutor executor;
     private final TangoDevStateAwaitor awaitor;
 
-    private final AtomicReference<Throwable> lastException = new AtomicReference<Throwable>(new Exception("No exceptions so far."));
+    private final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
 
     /**
      * Creates a new instance of the IDLDeviceProxy.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
-     *     joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy", "sys/tg_test/1")
+     * joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy", "sys/tg_test/1")
      * </code>
      *
      * @param name a Tango device full name, e.g. tango://{TANGO_HOST}/{SERVER_NAME}/{DOMAIN}/{DEVICE_ID}
      * @throws IDLDeviceProxyRuntimeException
      */
-    public IDLDeviceProxy(String name){
+    public IDLDeviceProxy(String name) {
         try {
-            this.proxy = new TangoProxyWrapper(name);
-            this.reader = new TangoDeviceAttributeReader(this.proxy,log, handler);
+            this.proxy = TangoProxies.newDeviceProxyWrapper(name);
+            this.reader = new TangoDeviceAttributeReader(this.proxy, log, handler);
             this.writer = new TangoDeviceAttributeWriter(this.proxy, log, handler);
             this.executor = new TangoDeviceCommandExecutor(this.proxy, log, handler);
             this.awaitor = new PollDevStateAwaitor(this.proxy, log, handler);
@@ -96,45 +98,44 @@ public class IDLDeviceProxy {
         }
     }
 
-    public String getExceptionMessage(){
+    public String getExceptionMessage() {
         return lastException.get().getMessage();
     }
 
     /**
-     *
      * @param timeout in milliseconds
      */
-    public void setTimeout(int timeout){
+    public void setTimeout(int timeout) {
         try {
             Field field = proxy.getClass().getDeclaredField("proxy");
             field.setAccessible(true);
             Object wrapped = field.get(proxy);
 
-            wrapped.getClass().getMethod("set_timeout_millis",int.class).invoke(wrapped,timeout);
+            wrapped.getClass().getMethod("set_timeout_millis", int.class).invoke(wrapped, timeout);
             field.setAccessible(false);
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             lastException.set(ex);
             throw handler.handle(ex);
         }
     }
 
     // Temporarily placed here
-    public void simulateExperiment(String receiver, int nIterations, long timeout){
-        try{
-            TangoProxyWrapper ss = new TangoProxyWrapper("tango://hzgharwi3:10000/development/ss/0");
+    public void simulateExperiment(String receiver, int nIterations, long timeout) {
+        try {
+            TangoProxy ss = TangoProxies.newDeviceProxyWrapper("tango://hzgharwi3:10000/development/ss/0");
 
             //ss.executeCommand("startCollectData",null);
             Thread.sleep(1000);
             long time = System.currentTimeMillis();
-            for(int i = 0; i<nIterations; i++, time = System.currentTimeMillis()){
+            for (int i = 0; i < nIterations; i++, time = System.currentTimeMillis()) {
 
-                ss.executeCommand("sendDataTo",new String[]{receiver,Long.toString(time)});
+                ss.executeCommand("sendDataTo", new String[]{receiver, Long.toString(time)});
 
                 Thread.sleep(timeout);
             }
 
             //ss.executeCommand("stopCollectData",null);
-        } catch(Throwable ex){
+        } catch (Exception ex) {
             lastException.set(ex);
             throw handler.handle(ex);
         }
@@ -147,9 +148,9 @@ public class IDLDeviceProxy {
     /**
      * Blocks current Thread (execution) until target Tango server reports desired state.
      * State is being checked every 100 milliseconds.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->waitUntil, "running"
      * </code>
@@ -157,11 +158,11 @@ public class IDLDeviceProxy {
      * @param state desired state in String format, i.e. "ON","RUNNING" etc (case insensitive)
      * @throws IDLDeviceProxyRuntimeException
      */
-    public void waitUntil(String state){
+    public void waitUntil(String state) {
         try {
             EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
             awaitor.waitUntil(targetDevState);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -170,9 +171,9 @@ public class IDLDeviceProxy {
     /**
      * Blocks current Thread (execution) until target Tango server reports state different from the specified.
      * State is being checked every 100 milliseconds.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->waitUntilNot, "moving"
      * </code>
@@ -184,7 +185,7 @@ public class IDLDeviceProxy {
         try {
             EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
             awaitor.waitUntilNot(targetDevState);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -196,9 +197,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command without an input argument.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand" )
      * </code>
@@ -210,7 +211,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command) {
         try {
             return executor.command_inout(command);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -218,9 +219,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link String}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand" , "Some Value" )
      * </code>
@@ -232,7 +233,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, String value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -240,9 +241,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link double}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", 0.125D )
      * </code>
@@ -254,7 +255,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, double value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -262,9 +263,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link double[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", DBLARR(3,1) )
      * </code>
@@ -276,7 +277,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, double[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -284,9 +285,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link long[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LON64ARR(3,1) )
      * </code>
@@ -298,7 +299,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, long[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -306,9 +307,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link long}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LON64ARR(3,1) )
      * </code>
@@ -320,7 +321,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, long value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -328,9 +329,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link short}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LON64ARR(3,1) )
      * </code>
@@ -342,7 +343,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, short value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -350,9 +351,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link float}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LON64ARR(3,1) )
      * </code>
@@ -364,7 +365,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, float value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -372,9 +373,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link int}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LON64ARR(3,1) )
      * </code>
@@ -386,7 +387,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, int value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -394,9 +395,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link String[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LON64ARR(3,1) )
      * </code>
@@ -408,7 +409,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, String[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -416,9 +417,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link float[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", FLTARR(3,1) )
      * </code>
@@ -430,7 +431,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, float[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -438,9 +439,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link short[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", INTARR(3,1) )
      * </code>
@@ -452,7 +453,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, short[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -468,7 +469,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, boolean value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -476,9 +477,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link byte[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", BYTARR(3,1) )
      * </code>
@@ -490,7 +491,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, byte[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -498,9 +499,9 @@ public class IDLDeviceProxy {
 
     /**
      * Executes command with an input argument of type {@link int[]}
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joObject = joDeviceProxy->executeCommand( "SomeCommand", LONARR(3,1) )
      * </code>
@@ -512,7 +513,7 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, int[] value) {
         try {
             return executor.command_inout(command, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -525,9 +526,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Does not return attribute value of specific type.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joResult = joDeviceProxy->readAttribute("SomeAttribute")
      * </code>
@@ -539,7 +540,7 @@ public class IDLDeviceProxy {
     public Object readAttribute(String attname) {
         try {
             return reader.readAttribute(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -548,9 +549,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link float}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * flt = joDeviceProxy->readAttributeFloat("SomeAttribute")
      * </code>
@@ -562,7 +563,7 @@ public class IDLDeviceProxy {
     public float readAttributeFloat(String attname) {
         try {
             return reader.readAttributeFloat(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -571,9 +572,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link long}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * long64 = joDeviceProxy->readAttributeLong("SomeAttribute")
      * </code>
@@ -585,7 +586,7 @@ public class IDLDeviceProxy {
     public long readAttributeLong(String attname) {
         try {
             return reader.readAttributeLong(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -594,9 +595,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link short}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * short = joDeviceProxy->readAttributeShort("SomeAttribute")
      * </code>
@@ -608,7 +609,7 @@ public class IDLDeviceProxy {
     public short readAttributeShort(String attname) {
         try {
             return reader.readAttributeShort(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -617,9 +618,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link double}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * dbl = joDeviceProxy->readAttributeDouble("SomeAttribute")
      * </code>
@@ -631,7 +632,7 @@ public class IDLDeviceProxy {
     public double readAttributeDouble(String attname) {
         try {
             return reader.readAttributeDouble(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -640,9 +641,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link int}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * long = joDeviceProxy->readAttributeInteger("SomeAttribute")
      * </code>
@@ -654,7 +655,7 @@ public class IDLDeviceProxy {
     public int readAttributeInteger(String attname) {
         try {
             return reader.readAttributeInteger(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -663,9 +664,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link String}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * String = joDeviceProxy->readAttributeState()
      * </code>
@@ -676,7 +677,7 @@ public class IDLDeviceProxy {
     public String readAttributeState() {
         try {
             return reader.readAttributeState();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -685,9 +686,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link String}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * String = joDeviceProxy->readAttributeString("SomeAttribute")
      * </code>
@@ -699,7 +700,7 @@ public class IDLDeviceProxy {
     public String readAttributeString(String attname) {
         try {
             return reader.readAttributeString(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -708,9 +709,9 @@ public class IDLDeviceProxy {
     /**
      * Reads an attribute from the target Tango server.
      * Returns an attribute value of type {@link boolean}.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * integer = joDeviceProxy->readAttributeBoolean("SomeAttribute")
      * </code>
@@ -722,7 +723,7 @@ public class IDLDeviceProxy {
     public boolean readAttributeBoolean(String attname) {
         try {
             return reader.readAttributeBoolean(attname);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -735,21 +736,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link boolean} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", 1
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, boolean value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -757,21 +758,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link byte} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", BYTE(1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, byte value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -779,21 +780,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link long} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LONG64(1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, long value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -801,21 +802,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link double} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", 0.125D
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, double value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -823,21 +824,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link short} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", 1234
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, short value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -845,21 +846,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link String} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", "Some Value"
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, String value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -867,21 +868,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link float} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", FLOAT(0.125)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, float value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -889,21 +890,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link int} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LONG(0.125)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, int value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -911,21 +912,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link char} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", BYTE(125)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, char value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -933,21 +934,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link double[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", DBLARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, double[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -955,21 +956,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link boolean[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", INTARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, boolean[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -977,21 +978,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link int[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LONARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, int[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -999,21 +1000,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link short[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", INTARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, short[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1021,21 +1022,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link int[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LONARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, int[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1043,21 +1044,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link String[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", STRARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, String[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1065,21 +1066,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link long[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LON64ARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, long[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1087,21 +1088,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link float[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", FLTARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, float[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1109,21 +1110,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link byte[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", BYTARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, byte[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1131,21 +1132,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link short[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", INTARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, short[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1153,21 +1154,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link boolean[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", INTARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, boolean[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1175,21 +1176,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link byte[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", BYTARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, byte[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1197,21 +1198,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link String[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", STRARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, String[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1219,21 +1220,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link long[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LON64ARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, long[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1241,21 +1242,21 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link double[][]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", DBLARR(2,5)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, double[][] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
@@ -1263,21 +1264,30 @@ public class IDLDeviceProxy {
 
     /**
      * Writes a {@link float[]} value to the attribute of the target Tango server.
-     *
+     * <p/>
      * Usage:
-     *
+     * <p/>
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", FLTARR(3,1)
      * </code>
      *
-     * @param name an attribute name
+     * @param name  an attribute name
      * @param value a value
      * @throws IDLDeviceProxyRuntimeException
      */
     public void writeAttribute(String name, float[] value) {
         try {
             writer.writeAttribute(name, value);
-        } catch (Throwable e) {
+        } catch (Exception e) {
+            lastException.set(e);
+            throw handler.handle(e);
+        }
+    }
+
+    public void setSource(int srcId) {
+        try {
+            proxy.setSource(DevSource.fromInt(srcId));
+        } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
         }
