@@ -29,7 +29,6 @@
 
 package hzg.wpn.idl;
 
-import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.TangoProxy;
 import wpn.hdri.tango.proxy.TangoProxyException;
@@ -40,12 +39,10 @@ import wpn.hdri.tango.proxy.TangoProxyException;
  */
 public class TangoDeviceAttributeReader {
     private final TangoProxy proxy;
-    private final Logger log;
     private final TangoProxyExceptionHandler handler;
 
-    public TangoDeviceAttributeReader(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
+    public TangoDeviceAttributeReader(TangoProxy proxy, TangoProxyExceptionHandler handler) {
         this.proxy = proxy;
-        this.log = log;
         this.handler = handler;
     }
 

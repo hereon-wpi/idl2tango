@@ -29,7 +29,6 @@
 
 package hzg.wpn.idl;
 
-import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.TangoProxy;
 
@@ -42,12 +41,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class TangoDevStateAwaitor {
     public static final String STATE = "State";
     private final TangoProxy proxy;
-    private final Logger log;
     private final TangoProxyExceptionHandler handler;
     private final AtomicReference<EnumDevState> crtDevState = new AtomicReference<EnumDevState>();
 
-    protected TangoDevStateAwaitor(Logger log, TangoProxy proxy, TangoProxyExceptionHandler handler) {
-        this.log = log;
+    protected TangoDevStateAwaitor(TangoProxy proxy, TangoProxyExceptionHandler handler) {
         this.proxy = proxy;
         this.handler = handler;
     }
@@ -78,10 +75,6 @@ public abstract class TangoDevStateAwaitor {
 
     protected TangoProxy getProxy() {
         return proxy;
-    }
-
-    protected Logger getLog() {
-        return log;
     }
 
     protected TangoProxyExceptionHandler getHandler() {

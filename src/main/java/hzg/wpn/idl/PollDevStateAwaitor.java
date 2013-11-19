@@ -29,7 +29,6 @@
 
 package hzg.wpn.idl;
 
-import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.TangoProxy;
 import wpn.hdri.tango.proxy.TangoProxyException;
@@ -56,7 +55,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
                 throw getHandler().handle(devFailed);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                getLog().error("Awaiting interrupted.");
+                System.err.println("ERROR: Awaiting has been interrupted.");
                 throw getHandler().handle(e);
             }
         }
@@ -76,7 +75,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
                 throw getHandler().handle(devFailed);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                getLog().error("Awaiting interrupted.");
+                System.err.println("ERROR: Awaiting has been interrupted.");
                 throw getHandler().handle(e);
             }
         }
@@ -87,7 +86,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
         setCrtDevState(crtState);
     }
 
-    public PollDevStateAwaitor(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
-        super(log, proxy, handler);
+    public PollDevStateAwaitor(TangoProxy proxy, TangoProxyExceptionHandler handler) {
+        super(proxy, handler);
     }
 }

@@ -60,7 +60,7 @@ public class IDLDeviceProxyTest {
     public void testWriteReadAttribute_String() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("string_scalar","Some test value");
+        instance.writeAttribute("string_scalar", "Some test value");
         String result = (String) instance.readAttribute("string_scalar");
 
         assertEquals("Some test value", result);
@@ -70,7 +70,7 @@ public class IDLDeviceProxyTest {
     public void testWriteReadAttribute_DoubleArr() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("double_spectrum",new double[]{1.0,1.1,1.2,1.3,1.4});
+        instance.writeAttribute("double_spectrum", new double[]{1.0, 1.1, 1.2, 1.3, 1.4});
         double[] result = (double[]) instance.readAttribute("double_spectrum");
 
         assertArrayEquals(new double[]{1.0, 1.1, 1.2, 1.3, 1.4}, result, 0.0);
@@ -81,13 +81,13 @@ public class IDLDeviceProxyTest {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         int size = 256; //sys/tg_test/1 has hardcoded maximum value of 256
-        double [] sinus = new double[size];
+        double[] sinus = new double[size];
         double coeff = Math.PI / 180;
-        for(int i = 0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             sinus[i] = Math.sin(i * coeff);
         }
 
-        instance.writeAttribute("double_spectrum",sinus);
+        instance.writeAttribute("double_spectrum", sinus);
 
         double[] result = (double[]) instance.readAttribute("double_spectrum");
 
@@ -98,7 +98,7 @@ public class IDLDeviceProxyTest {
     public void testWriteReadAttribute_Int() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("long_scalar_w",1234);
+        instance.writeAttribute("long_scalar_w", 1234);
         int result = instance.readAttributeInteger("long_scalar_w");
 
         assertEquals(1234, result);
@@ -108,7 +108,7 @@ public class IDLDeviceProxyTest {
     public void testWriteReadAttribute_Double() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("double_scalar_w",3.14D);
+        instance.writeAttribute("double_scalar_w", 3.14D);
 
         double result = instance.readAttributeDouble("double_scalar_w");
 
@@ -119,28 +119,28 @@ public class IDLDeviceProxyTest {
     public void testWriteReadAttribute_FloatImage() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("float_image",new float[][]{{0.1F,0.2F},{0.3F,0.4F},{0.5F,0.6F},{0.5F,0.6F}});
+        instance.writeAttribute("float_image", new float[][]{{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5F, 0.6F}, {0.5F, 0.6F}});
 
         float[][] result = (float[][]) instance.readAttribute("float_image");
 
-        assertArrayEquals(new float[]{0.1F,0.2F}, result[0],0.0F);
-        assertArrayEquals(new float[]{0.3F,0.4F}, result[1],0.0F);
-        assertArrayEquals(new float[]{0.5F,0.6F}, result[2],0.0F);
-        assertArrayEquals(new float[]{0.5F,0.6F}, result[3],0.0F);
+        assertArrayEquals(new float[]{0.1F, 0.2F}, result[0], 0.0F);
+        assertArrayEquals(new float[]{0.3F, 0.4F}, result[1], 0.0F);
+        assertArrayEquals(new float[]{0.5F, 0.6F}, result[2], 0.0F);
+        assertArrayEquals(new float[]{0.5F, 0.6F}, result[3], 0.0F);
     }
 
     @Test
-     public void testWriteReadAttribute_DoubleImage() throws Exception {
+    public void testWriteReadAttribute_DoubleImage() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("double_image",new double[][]{{0.1,0.2},{0.3,0.4},{0.5,0.6},{0.5,0.6}});
+        instance.writeAttribute("double_image", new double[][]{{0.1, 0.2}, {0.3, 0.4}, {0.5, 0.6}, {0.5, 0.6}});
 
         double[][] result = (double[][]) instance.readAttribute("double_image");
 
-        assertArrayEquals(new double[]{0.1,0.2}, result[0],0.0);
-        assertArrayEquals(new double[]{0.3,0.4}, result[1],0.0);
-        assertArrayEquals(new double[]{0.5,0.6}, result[2],0.0);
-        assertArrayEquals(new double[]{0.5,0.6}, result[3],0.0);
+        assertArrayEquals(new double[]{0.1, 0.2}, result[0], 0.0);
+        assertArrayEquals(new double[]{0.3, 0.4}, result[1], 0.0);
+        assertArrayEquals(new double[]{0.5, 0.6}, result[2], 0.0);
+        assertArrayEquals(new double[]{0.5, 0.6}, result[3], 0.0);
     }
 
     @Test
@@ -151,17 +151,17 @@ public class IDLDeviceProxyTest {
         BufferedImage img = ImageIO.read(IDLDeviceProxy.class.getResourceAsStream("/images/check.png"));
         Raster imgRaster = img.getData();
         int imgWidth = imgRaster.getWidth(), imgHeight = imgRaster.getHeight();
-        int [][] pixels = new int[img.getHeight()][img.getWidth()];
-        for(int i = 0,
-                    x = imgRaster.getMinX(), y = imgRaster.getMinY(),
-                    imgSize = imgWidth*imgHeight;
-            i < imgSize;
-            i++, x = x<(imgWidth-1) ? x+1 : 0, y += x==0 ? 1:0){
-            int[] RGBa = imgRaster.getPixel(x,y,new int[4]);
+        int[][] pixels = new int[img.getHeight()][img.getWidth()];
+        for (int i = 0,
+                     x = imgRaster.getMinX(), y = imgRaster.getMinY(),
+                     imgSize = imgWidth * imgHeight;
+             i < imgSize;
+             i++, x = x < (imgWidth - 1) ? x + 1 : 0, y += x == 0 ? 1 : 0) {
+            int[] RGBa = imgRaster.getPixel(x, y, new int[4]);
             int red = RGBa[0],
-                green = RGBa[1],
-                blue = RGBa[2],
-                alpha = RGBa[3];
+                    green = RGBa[1],
+                    blue = RGBa[2],
+                    alpha = RGBa[3];
             int rgb = 0;
             rgb = alpha;
             rgb = (rgb << 8) + red;
@@ -170,18 +170,18 @@ public class IDLDeviceProxyTest {
             pixels[y][x] = rgb;
         }
 
-        instance.writeAttribute("ushort_image",pixels);
+        instance.writeAttribute("ushort_image", pixels);
 
         int[][] result = (int[][]) instance.readAttribute("ushort_image");
 
-        BufferedImage imgResult = new BufferedImage(imgWidth,imgHeight,BufferedImage.TYPE_USHORT_555_RGB);
-        for(int i = 0,x = 0,y = 0,size = imgWidth*imgWidth;
-            i<size;
-            i++,x = x<(imgWidth-1) ? x+1 : 0, y += x==0 ? 1:0){
-            imgResult.setRGB(x,y,result[y][x]);
+        BufferedImage imgResult = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_USHORT_555_RGB);
+        for (int i = 0, x = 0, y = 0, size = imgWidth * imgWidth;
+             i < size;
+             i++, x = x < (imgWidth - 1) ? x + 1 : 0, y += x == 0 ? 1 : 0) {
+            imgResult.setRGB(x, y, result[y][x]);
         }
 
-        ImageIO.write(imgResult,"png",new File("target/result_image.png"));
+        ImageIO.write(imgResult, "png", new File("target/result_image.png"));
     }
 
     //@Test
@@ -191,13 +191,13 @@ public class IDLDeviceProxyTest {
 
 //        instance.writeAttribute("double_image",pixels);
 
-        System.setProperty(ImageTangoDataTypes.TANGO_IMAGE_EXTRACTER_USES_MULTITHREADING,"true");
-        for(int i = 0 ;i<10;i++){
-        long startReadImage = System.nanoTime();
-        int[][] result = (int[][]) instance.readAttribute("Image");
-        long endReadImage = System.nanoTime();
+        System.setProperty(ImageTangoDataTypes.TANGO_IMAGE_EXTRACTER_USES_MULTITHREADING, "true");
+        for (int i = 0; i < 10; i++) {
+            long startReadImage = System.nanoTime();
+            int[][] result = (int[][]) instance.readAttribute("Image");
+            long endReadImage = System.nanoTime();
 
-        System.out.println("Read image time (millis):" + nanos.toMillis(endReadImage-startReadImage));
+            System.out.println("Read image time (millis):" + nanos.toMillis(endReadImage - startReadImage));
         }
 //
 //        assertArrayEquals(new double[]{0.1,0.2}, result[0],0.0);
@@ -206,7 +206,7 @@ public class IDLDeviceProxyTest {
     }
 
     @Test
-    public void testExecuteCommand() throws Exception{
+    public void testExecuteCommand() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         String result = (String) instance.executeCommand("DevString", "Some test value");
@@ -215,7 +215,7 @@ public class IDLDeviceProxyTest {
     }
 
     @Test
-    public void testExecuteCommand_Void() throws Exception{
+    public void testExecuteCommand_Void() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         Void result = (Void) instance.executeCommand("DevVoid");
@@ -224,7 +224,7 @@ public class IDLDeviceProxyTest {
     }
 
     @Test
-    public void testExecuteCommand_State() throws Exception{
+    public void testExecuteCommand_State() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         EnumDevState result = (EnumDevState) instance.executeCommand("State");
@@ -233,7 +233,7 @@ public class IDLDeviceProxyTest {
     }
 
     //@Test
-    public void testAwaitUntil() throws Exception{
+    public void testAwaitUntil() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         long nanosStart = System.nanoTime();
@@ -245,7 +245,7 @@ public class IDLDeviceProxyTest {
     }
 
     //@Test
-    public void testAwaitUntilNot() throws Exception{
+    public void testAwaitUntilNot() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         long nanosStart = System.nanoTime();
@@ -258,11 +258,30 @@ public class IDLDeviceProxyTest {
     }
 
     @Test
-    public void testSetTimeout(){
+    public void testSetTimeout() {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
         instance.setTimeout(9000);
 
         //assume that if nothing bad has happened everything is fine
+    }
+
+    //    @Test
+    public void testClientId() throws Exception {
+        IDLDeviceProxy proxy1 = new IDLDeviceProxy("tango://hzgharwi3:10000/development/1.0.1-SNAPSHOT/0");
+        proxy1.setSource(0);
+        proxy1.executeCommand("Status");
+        proxy1.writeAttribute("encode", true);
+
+        IDLDeviceProxy proxy2 = new IDLDeviceProxy("tango://hzgharwi3:10000/development/1.0.1-SNAPSHOT/0");
+        proxy2.setSource(0);
+        proxy2.executeCommand("Status");
+        proxy2.writeAttribute("outputType", "JSON");
+        boolean result = proxy2.readAttributeBoolean("encode");
+        System.out.println(result);
+        String outputType = proxy2.readAttributeString("outputType");
+        System.out.println(outputType);
+        outputType = proxy1.readAttributeString("outputType");
+        System.out.println(outputType);
     }
 }

@@ -29,7 +29,7 @@
 
 package hzg.wpn.idl;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.*;
 
@@ -42,7 +42,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     private final Object internalLock = new Object();
 
     public EventDevStateAwaitor(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
-        super(log, proxy, handler);
+        super(proxy, handler);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             throw getHandler().handle(devFailed);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            getLog().error("Awaiting interrupted.");
+            System.err.print("ERROR: Awaiting has been interrupted.");
             throw getHandler().handle(error != null ? error : e);
         }
     }
@@ -84,7 +84,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             throw getHandler().handle(devFailed);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            getLog().error("Awaiting interrupted.");
+            System.err.println("ERROR: Awaiting has been interrupted.");
             throw getHandler().handle(error != null ? error : e);
         }
     }

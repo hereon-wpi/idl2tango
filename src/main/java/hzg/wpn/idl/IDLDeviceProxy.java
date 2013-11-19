@@ -29,7 +29,6 @@
 
 package hzg.wpn.idl;
 
-import org.apache.log4j.Logger;
 import wpn.hdri.tango.data.EnumDevState;
 import wpn.hdri.tango.proxy.DevSource;
 import wpn.hdri.tango.proxy.TangoProxies;
@@ -47,24 +46,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 05.06.12
  */
 public class IDLDeviceProxy {
-    private static final Logger log = new Logger(IDLDeviceProxy.class.getSimpleName()) {
-        @Override
-        public void info(Object message) {
-            System.out.println(message);
-        }
-
-        @Override
-        public void error(Object message) {
-            System.err.println(message);
-        }
-
-        @Override
-        public void error(Object message, Throwable t) {
-            System.err.println(message);
-            t.printStackTrace();
-        }
-    };
-    private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler(log);
+    private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler();
 
     private final TangoProxy proxy;
     private final TangoDeviceAttributeReader reader;
@@ -89,10 +71,10 @@ public class IDLDeviceProxy {
     public IDLDeviceProxy(String name) {
         try {
             this.proxy = TangoProxies.newDeviceProxyWrapper(name);
-            this.reader = new TangoDeviceAttributeReader(this.proxy, log, handler);
-            this.writer = new TangoDeviceAttributeWriter(this.proxy, log, handler);
-            this.executor = new TangoDeviceCommandExecutor(this.proxy, log, handler);
-            this.awaitor = new PollDevStateAwaitor(this.proxy, log, handler);
+            this.reader = new TangoDeviceAttributeReader(this.proxy, handler);
+            this.writer = new TangoDeviceAttributeWriter(this.proxy, handler);
+            this.executor = new TangoDeviceCommandExecutor(this.proxy, handler);
+            this.awaitor = new PollDevStateAwaitor(this.proxy, handler);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
