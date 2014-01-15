@@ -77,6 +77,17 @@ public class IDLDeviceProxyTest {
     }
 
     @Test
+    public void testWriteReadAttribute_ULong() throws Exception {
+        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+
+        instance.writeAttribute("ulong_scalar", 1234L);
+        long result = (Long) instance.readAttribute("ulong_scalar");
+
+        //TangoTest returns random number
+        //assertEquals(1234, result);
+    }
+
+    @Test
     public void testWriteReadAttribute_DoubleSpectrum() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 

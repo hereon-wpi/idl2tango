@@ -63,7 +63,7 @@
         <dependency>
             <groupId>hzg.wpn</groupId>
             <artifactId>TangoAPI</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
             <!-- TangoAPI production pom should exclude everything since the jar file accumulates all the dependencies -->
             <exclusions>
                 <exclusion>
