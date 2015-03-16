@@ -39,7 +39,9 @@ import org.tango.client.ez.util.TangoImageUtils;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -58,6 +60,8 @@ public class IDLDeviceProxy {
     private final TangoDeviceCommandExecutor executor;
     private final TangoDevStateAwaitor awaitor;
 
+    private final int version;
+
     private final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
 
     /**
@@ -74,6 +78,10 @@ public class IDLDeviceProxy {
      */
     public IDLDeviceProxy(String name) {
         try {
+            Properties properties = new Properties();
+            properties.load(this.getClass().getClassLoader().getResourceAsStream("version.properties"));
+            this.version = Integer.parseInt(properties.getProperty("hzg.wpn.idl.version"));
+
             this.proxy = TangoProxies.newDeviceProxyWrapper(name);
             this.reader = new TangoDeviceAttributeReader(this.proxy, handler);
             this.writer = new TangoDeviceAttributeWriter(this.proxy, handler);
@@ -81,6 +89,8 @@ public class IDLDeviceProxy {
             this.awaitor = new EventDevStateAwaitor(this.proxy, handler);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
+        } catch (IOException e) {
+            throw handler.handle(e);
         }
     }
 
@@ -1319,5 +1329,9 @@ public class IDLDeviceProxy {
             lastException.set(e);
             throw handler.handle(e);
         }
+    }
+
+    public int getVersion(){
+        return version;
     }
 }

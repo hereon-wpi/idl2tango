@@ -5,6 +5,8 @@
 
 pro StatusServerIDLClient
 
+  PRINT, FILEPATH('idljavabrc')
+
   SETENV, 'IDLJAVAB_CONFIG=D:\Projects\hzg.wpn.projects\idl2tango\src\test\idl\idljavabrc'
 
   ; Create a StatusServer proxy
