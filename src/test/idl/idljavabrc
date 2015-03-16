@@ -1,0 +1,148 @@
+#
+#
+# IDL Java bridge configuration (Windows)
+#
+#
+
+
+##########################
+# Java CLASSPATH setting
+##########################
+#
+#
+#    This setting determines how the IDL-Java bridge finds its java classes.
+#    It MUST be set in the config file if you wish to find any classes other
+#    than those provided by Java
+#
+#    If $CLASSPATH appears in the setting (as shown below), the value of
+#    the environment variable $CLASSPATH is substituted in this setting
+#
+#    Entries in Classpath should be seperated by a semi-colon on Windows
+#
+#    NOTE: This setting follows the rules of the -classpath option in the java
+#          or javac command,  That is, .jar files should be explicitly stated.
+#          If only a directory location is specified, Java will find .class
+#          files inside this folder but NOT .jar files
+
+
+# Allow IDL-Java bridge to use .class files located in my CLASSPATH and also the
+# classes found in the examples .jar file shipped with the bridge
+
+JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2TangoJavaClient-1.0.3.jar
+
+
+
+################################
+# Java virtual machine locations
+################################
+#
+#    When running the IDL-Java bridge from the IDL Workbench, the
+#    Java Virtual Machine used by the workbench is also used for the
+#    bridge. Values set in this file or by the IDLJAVAB_LIB_LOCATION
+#    environment variable are ignored.
+#
+#    A 1.6 or later JVM is required.
+#
+#    For IDL command line and runtime sessions, these settings control
+#    which Java Virtual Machine is started by the IDL-Java Bridge.
+#    They are initially commented out because the bridge attempts to
+#    use existing system knowledge to determine the current JVM.
+#    This is determined as follows:
+#
+#       1. If 'JVM LibLocation' is set in the config file, this JVM is run.
+#
+#       2. Otherwise, check the environment variable $IDLJAVAB_LIB_LOCATION.
+#          It is the secondary method for setting 'JVM LibLocation'.  If set,
+#          this JVM is run.
+#
+#       3. Else, check the environment variable $JAVA_HOME.  This often points
+#          to the top of the current Java SDK.  From this setting, the bridge
+#          attempts to infer a 'good' JVM to run.  It looks for these JVMs in
+#          order:
+#          classic, hotspot, client, server.
+#
+#
+#       4. Otherwise, check the JavaSoft registry entries.
+#          If 'Java Development Kit' is set, use the JVM in this SDK
+#          (assumes hotspot JVM for Java 1.6 and client JVM for 1.6 and later)
+#          Otherwise, if 'Java Runtime Environment' is set, use this JVM.
+#
+#
+#    Sample settings in this config file would look like this:
+#
+#      JVM LibLocation  = C:\jdk1.6\jre\bin\client
+
+
+#use JAVA_HOME
+#JVM LibLocation = C:\Program Files\ITT\IDL\IDL81\bin\bin.x86_64\jre\bin\server\
+
+
+###################
+# JVM start options
+###################
+#
+#   'JVM Option#'
+#      There may be up to 20 additional JVM options specified.  These
+#      will be used when starting the JVM.
+#
+#      NOTE: This is for advanced users only who understand JVM initialization
+#
+#
+#      For example, a user that wants to reset the initial and maximum memory
+#      allocated when the JVM starts, might do something like:
+#        JVM Option1 = -Xms4m
+#        JVM Option2 = -Xmx16m
+#
+#      NOTE: These options are unsupported options...thus their effects are
+#            implementation-dependent. It's possible that your implementation
+#            doesn't support them.
+#
+#      When running the IDL-Java bridge from the IDL Workbench, any
+#      JVM options included in this file are ignored. To set JVM
+#      options to be used by processes launched by the IDL Workbench,
+#      add the option flags to the idlde.ini file for your system.
+
+#JVM Option1 = -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
+
+
+###########################
+# IDL-Java Bridge debugging
+###########################
+#
+#
+# Some limited debugging is provided via a log file.
+#
+# 'Log Location':  Location where log files will be created.
+#                  Log files have format jb_log<pid>.txt
+#
+# 'Bridge Logging':  Level of debugging information logged to log file.
+#                    Possible options are:
+#                    - SEVERE (default, bridge errors logged)
+#                    - CONFIG (configuration settings logged)
+#                    - CONFIGFINE (configuration settings logged, more detail)
+
+Log Location = logs
+Bridge Logging = CONFIG
+
+
+##############################
+# IDL-Java Bridge Reset Policy
+##############################
+#
+# By default, the IDL-Java bridge persists for the duration of the IDL
+# session in which it was created. This means that modifications to
+# items in the Java Classpath are not loaded until a new IDL session
+# is started. This policy allows the IDL-Java bridge to be configured
+# to reset when the IDL executive command .FULL_RESET_SESSION is executed.
+#
+# NOTE: when running the IDL-Java bridge from the IDL Workbench, the
+# value of the 'Restart Bridge' setting is ignored. Restart the IDL
+# Workbench to restart the IDL-Java bridge.
+#
+# 'Restart Bridge':  Policy for restarting the IDL-Java bridge.
+#                    Possible options are:
+#                    - False (Bridge does not reset during an IDL session)
+#                    - True  (Bridge resets when the .FULL_RESET_SESSION
+#                             executive command is executed)
+
+Restart Bridge = True
