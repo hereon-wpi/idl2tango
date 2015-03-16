@@ -29,8 +29,10 @@
 
 package hzg.wpn.idl;
 
-import wpn.hdri.tango.proxy.TangoProxy;
-import wpn.hdri.tango.proxy.TangoProxyException;
+
+import org.tango.client.ez.data.type.TangoImage;
+import org.tango.client.ez.proxy.TangoProxy;
+import org.tango.client.ez.proxy.TangoProxyException;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -217,6 +219,14 @@ public class TangoDeviceAttributeWriter {
     public void writeAttribute(String name, int[][] value) {
         try {
             proxy.writeAttribute(name, value);
+        } catch (TangoProxyException devFailed) {
+            throw handler.handle(devFailed);
+        }
+    }
+
+    public void writeAttribute(String name, TangoImage<?> image) {
+        try {
+            proxy.writeAttribute(name, image);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }

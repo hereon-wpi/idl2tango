@@ -29,8 +29,9 @@
 
 package hzg.wpn.idl;
 
-import wpn.hdri.tango.data.EnumDevState;
-import wpn.hdri.tango.proxy.TangoProxy;
+
+import org.tango.client.ez.data.EnumDevState;
+import org.tango.client.ez.proxy.TangoProxy;
 
 import java.util.concurrent.atomic.AtomicReference;
 

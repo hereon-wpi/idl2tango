@@ -29,12 +29,16 @@
 
 package hzg.wpn.idl;
 
-import wpn.hdri.tango.data.EnumDevState;
-import wpn.hdri.tango.proxy.DevSource;
-import wpn.hdri.tango.proxy.TangoProxies;
-import wpn.hdri.tango.proxy.TangoProxy;
-import wpn.hdri.tango.proxy.TangoProxyException;
+import fr.esrf.Tango.DevSource;
+import org.tango.client.ez.data.EnumDevState;
+import org.tango.client.ez.data.type.TangoImage;
+import org.tango.client.ez.proxy.TangoProxies;
+import org.tango.client.ez.proxy.TangoProxy;
+import org.tango.client.ez.proxy.TangoProxyException;
+import org.tango.client.ez.util.TangoImageUtils;
 
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -74,7 +78,7 @@ public class IDLDeviceProxy {
             this.reader = new TangoDeviceAttributeReader(this.proxy, handler);
             this.writer = new TangoDeviceAttributeWriter(this.proxy, handler);
             this.executor = new TangoDeviceCommandExecutor(this.proxy, handler);
-            this.awaitor = new PollDevStateAwaitor(this.proxy, handler);
+            this.awaitor = new EventDevStateAwaitor(this.proxy, handler);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
@@ -101,27 +105,39 @@ public class IDLDeviceProxy {
         }
     }
 
-    // Temporarily placed here
-    public void simulateExperiment(String receiver, int nIterations, long timeout) {
+    public static void writeTangoImageAsBMP(String path, TangoImage<int[]> image){
         try {
-            TangoProxy ss = TangoProxies.newDeviceProxyWrapper("tango://hzgharwi3:10000/development/ss/0");
-
-            //ss.executeCommand("startCollectData",null);
-            Thread.sleep(1000);
-            long time = System.currentTimeMillis();
-            for (int i = 0; i < nIterations; i++, time = System.currentTimeMillis()) {
-
-                ss.executeCommand("sendDataTo", new String[]{receiver, Long.toString(time)});
-
-                Thread.sleep(timeout);
-            }
-
-            //ss.executeCommand("stopCollectData",null);
+            boolean isDone = ImageIO.write(
+                    TangoImageUtils.toRenderedImage_sRGB(image.data, image.width, image.height),
+                    "bmp", new File(path));
+            if(!isDone) throw handler.handle(new RuntimeException("Can not write image: no writer has been found!"));
         } catch (Exception ex) {
-            lastException.set(ex);
             throw handler.handle(ex);
         }
     }
+
+    public static void writeTangoImageAsJPEG(String path, TangoImage<int[]> image){
+        try {
+            boolean isDone = ImageIO.write(
+                    TangoImageUtils.toRenderedImage_sRGB(image.data, image.width, image.height),
+                    "jpeg", new File(path));
+            if(!isDone) throw handler.handle(new RuntimeException("Can not write image: no writer has been found!"));
+        } catch (Exception ex) {
+            throw handler.handle(ex);
+        }
+    }
+
+    public static void writeTangoImageAsTIFF(String path, TangoImage<?> image){
+        try {
+            boolean isDone = ImageIO.write(
+                    TangoImageUtils.toRenderedImageDedicatedComponents_GRAY(image.data, image.width, image.height),
+                    "tif", new File(path));
+            if(!isDone) throw handler.handle(new RuntimeException("Can not write image: no writer has been found!"));
+        } catch (Exception ex) {
+            throw handler.handle(ex);
+        }
+    }
+
 
     //==========================
     // waitUntil
@@ -1024,6 +1040,36 @@ public class IDLDeviceProxy {
         }
     }
 
+    public void writeAttribute(String attrName, int[] data, int width, int height){
+        try {
+            TangoImage<int[]> value = new TangoImage<int[]>(data, width, height);
+            writer.writeAttribute(attrName, value);
+        } catch (Exception e) {
+            lastException.set(e);
+            throw handler.handle(e);
+        }
+    }
+
+    public void writeAttribute(String attrName, double[] data, int width, int height){
+        try {
+            TangoImage<double[]> value = new TangoImage<double[]>(data, width, height);
+            writer.writeAttribute(attrName, value);
+        } catch (Exception e) {
+            lastException.set(e);
+            throw handler.handle(e);
+        }
+    }
+
+    public void writeAttribute(String attrName, float[] data, int width, int height){
+        try {
+            TangoImage<float[]> value = new TangoImage<float[]>(data, width, height);
+            writer.writeAttribute(attrName, value);
+        } catch (Exception e) {
+            lastException.set(e);
+            throw handler.handle(e);
+        }
+    }
+
     /**
      * Writes a {@link String[]} value to the attribute of the target Tango server.
      * <p/>
@@ -1268,7 +1314,7 @@ public class IDLDeviceProxy {
 
     public void setSource(int srcId) {
         try {
-            proxy.setSource(DevSource.fromInt(srcId));
+            proxy.toDeviceProxy().set_source(DevSource.from_int(srcId));
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);

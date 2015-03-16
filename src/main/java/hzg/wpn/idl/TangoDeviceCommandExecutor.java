@@ -29,8 +29,9 @@
 
 package hzg.wpn.idl;
 
-import wpn.hdri.tango.proxy.TangoProxy;
-import wpn.hdri.tango.proxy.TangoProxyException;
+
+import org.tango.client.ez.proxy.TangoProxy;
+import org.tango.client.ez.proxy.TangoProxyException;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>

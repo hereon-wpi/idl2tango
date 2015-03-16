@@ -30,8 +30,8 @@
 package hzg.wpn.idl;
 
 import org.slf4j.Logger;
-import wpn.hdri.tango.data.EnumDevState;
-import wpn.hdri.tango.proxy.*;
+import org.tango.client.ez.data.EnumDevState;
+import org.tango.client.ez.proxy.*;
 
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
@@ -41,7 +41,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
 
     private final Object internalLock = new Object();
 
-    public EventDevStateAwaitor(TangoProxy proxy, Logger log, TangoProxyExceptionHandler handler) {
+    public EventDevStateAwaitor(TangoProxy proxy, TangoProxyExceptionHandler handler) {
         super(proxy, handler);
     }
 
@@ -51,13 +51,13 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             EnumDevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);
 
-            int eventId = subscribeToStateChange();
+            subscribeToStateChange();
             synchronized (internalLock) {
                 while (!targetStateReached(targetState)) {
                     internalLock.wait();
                 }
             }
-            getProxy().unsubscribeEvent(eventId);
+            listener = null;
         } catch (TangoProxyException devFailed) {
             throw getHandler().handle(devFailed);
         } catch (InterruptedException e) {
@@ -73,13 +73,13 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             EnumDevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);
 
-            int eventId = subscribeToStateChange();
+            subscribeToStateChange();
             synchronized (internalLock) {
                 while (targetStateReached(targetState)) {
                     internalLock.wait();
                 }
             }
-            getProxy().unsubscribeEvent(eventId);
+            listener = null;
         } catch (TangoProxyException devFailed) {
             throw getHandler().handle(devFailed);
         } catch (InterruptedException e) {
@@ -90,10 +90,12 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     private volatile Throwable error = null;
+    private volatile TangoEventListener<EnumDevState> listener;
 
-    private int subscribeToStateChange() throws TangoProxyException {
+    private void subscribeToStateChange() throws TangoProxyException {
         final Thread mainThread = Thread.currentThread();
-        return getProxy().subscribeEvent(STATE, TangoEvent.CHANGE, new TangoEventCallback<EnumDevState>() {
+        getProxy().subscribeToEvent(STATE, TangoEvent.CHANGE);
+        getProxy().addEventListener(STATE, TangoEvent.CHANGE, listener = new TangoEventListener<EnumDevState>() {
             @Override
             public void onEvent(EventData<EnumDevState> eventData) {
                 EnumDevState crtState = eventData.getValue();

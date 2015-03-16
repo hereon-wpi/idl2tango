@@ -30,13 +30,16 @@
 package hzg.wpn.idl;
 
 import org.junit.Test;
-import wpn.hdri.tango.data.EnumDevState;
-import wpn.hdri.tango.data.type.ImageTangoDataTypes;
+import org.tango.client.ez.data.type.ImageTangoDataTypes;
+import org.tango.client.ez.data.type.TangoImage;
+import org.tango.client.ez.util.TangoImageUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.*;
@@ -130,28 +133,25 @@ public class IDLDeviceProxyTest {
     public void testWriteReadAttribute_FloatImage() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("float_image", new float[][]{{0.1F, 0.2F}, {0.3F, 0.4F}, {0.5F, 0.6F}, {0.5F, 0.6F}});
+        instance.writeAttribute("float_image", new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, 2, 4);
 
-        float[][] result = (float[][]) instance.readAttribute("float_image");
+        TangoImage<float[]> result = (TangoImage<float[]>) instance.readAttribute("float_image");
 
-        assertArrayEquals(new float[]{0.1F, 0.2F}, result[0], 0.0F);
-        assertArrayEquals(new float[]{0.3F, 0.4F}, result[1], 0.0F);
-        assertArrayEquals(new float[]{0.5F, 0.6F}, result[2], 0.0F);
-        assertArrayEquals(new float[]{0.5F, 0.6F}, result[3], 0.0F);
+        assertArrayEquals(new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, Arrays.copyOfRange(result.data, 0, 2*4), 0.01F);
     }
 
     @Test
     public void testWriteReadAttribute_DoubleImage() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        instance.writeAttribute("double_image", new double[][]{{0.1, 0.2}, {0.3, 0.4}, {0.5, 0.6}, {0.5, 0.6}});
 
-        double[][] result = (double[][]) instance.readAttribute("double_image");
+        TangoImage<double[]> image = new TangoImage<double[]>(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6},2,4);
 
-        assertArrayEquals(new double[]{0.1, 0.2}, result[0], 0.0);
-        assertArrayEquals(new double[]{0.3, 0.4}, result[1], 0.0);
-        assertArrayEquals(new double[]{0.5, 0.6}, result[2], 0.0);
-        assertArrayEquals(new double[]{0.5, 0.6}, result[3], 0.0);
+        instance.writeAttribute("double_image", image.data, image.width, image.height);
+
+        TangoImage<double[]> result = (TangoImage<double[]>) instance.readAttribute("double_image");
+
+        assertArrayEquals(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6}, Arrays.copyOfRange(result.data,0,2*4), 0.0);
     }
 
     @Test
@@ -181,18 +181,41 @@ public class IDLDeviceProxyTest {
             pixels[y][x] = rgb;
         }
 
-        instance.writeAttribute("ushort_image", pixels);
+        TangoImage<int[]> image = TangoImage.from2DArray(pixels);
 
-        int[][] result = (int[][]) instance.readAttribute("ushort_image");
+        instance.writeAttribute("ushort_image", image.data, imgWidth, imgHeight);
 
-        BufferedImage imgResult = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_USHORT_555_RGB);
-        for (int i = 0, x = 0, y = 0, size = imgWidth * imgWidth;
-             i < size;
-             i++, x = x < (imgWidth - 1) ? x + 1 : 0, y += x == 0 ? 1 : 0) {
-            imgResult.setRGB(x, y, result[y][x]);
-        }
+        TangoImage<int[]> result = (TangoImage<int[]>) instance.readAttribute("ushort_image");
 
+        RenderedImage imgResult = TangoImageUtils.toRenderedImage_sRGB(result.data, result.width, result.height);
         ImageIO.write(imgResult, "png", new File("target/result_image.png"));
+    }
+
+    @Test
+    public void testReadWriteImage_BMP(){
+        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+
+        TangoImage<int[]> image = (TangoImage<int[]>) instance.readAttribute("ushort_image");
+
+        instance.writeTangoImageAsBMP("target/testReadWriteImage_result.bmp", image);
+    }
+
+    @Test
+    public void testReadWriteImage_JPEG(){
+        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+
+        TangoImage<int[]> image = (TangoImage<int[]>) instance.readAttribute("ushort_image");
+
+        instance.writeTangoImageAsJPEG("target/testReadWriteImage_result.jpeg", image);
+    }
+
+    //@Test
+    public void testReadWriteImage_TIFF(){
+        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+
+        TangoImage<?> image = (TangoImage<?>) instance.readAttribute("float_image");
+
+        instance.writeTangoImageAsTIFF("target/testReadWriteImage_result.tiff", image);
     }
 
     //@Test
@@ -238,9 +261,9 @@ public class IDLDeviceProxyTest {
     public void testExecuteCommand_State() throws Exception {
         IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
 
-        EnumDevState result = (EnumDevState) instance.executeCommand("State");
+        String result = instance.executeCommand("State").toString();
 
-        assertSame(EnumDevState.RUNNING, result);
+        assertEquals("RUNNING", result);
     }
 
     //@Test
