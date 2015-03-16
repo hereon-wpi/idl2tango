@@ -60,7 +60,7 @@ public class IDLDeviceProxy {
     private final TangoDeviceCommandExecutor executor;
     private final TangoDevStateAwaitor awaitor;
 
-    private final int version;
+    private final int version = 104;
 
     private final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
 
@@ -78,10 +78,6 @@ public class IDLDeviceProxy {
      */
     public IDLDeviceProxy(String name) {
         try {
-            Properties properties = new Properties();
-            properties.load(this.getClass().getClassLoader().getResourceAsStream("version.properties"));
-            this.version = Integer.parseInt(properties.getProperty("hzg.wpn.idl.version"));
-
             this.proxy = TangoProxies.newDeviceProxyWrapper(name);
             this.reader = new TangoDeviceAttributeReader(this.proxy, handler);
             this.writer = new TangoDeviceAttributeWriter(this.proxy, handler);
@@ -89,8 +85,6 @@ public class IDLDeviceProxy {
             this.awaitor = new EventDevStateAwaitor(this.proxy, handler);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
-        } catch (IOException e) {
-            throw handler.handle(e);
         }
     }
 
