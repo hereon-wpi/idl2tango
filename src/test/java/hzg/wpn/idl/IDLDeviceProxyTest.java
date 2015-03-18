@@ -141,7 +141,7 @@ public class IDLDeviceProxyTest {
 
         TangoImage<float[]> result = (TangoImage<float[]>) instance.readAttribute("float_image");
 
-        assertArrayEquals(new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, Arrays.copyOfRange(result.getData(), 0, 2*4), 0.01F);
+        assertArrayEquals(new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, Arrays.copyOfRange(result.getData(), 0, 2 * 4), 0.01F);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class IDLDeviceProxyTest {
 
         TangoImage<double[]> result = (TangoImage<double[]>) instance.readAttribute("double_image");
 
-        assertArrayEquals(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6}, Arrays.copyOfRange(result.getData(),0,2*4), 0.0);
+        assertArrayEquals(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6}, Arrays.copyOfRange(result.getData(), 0, 2 * 4), 0.0);
     }
 
     @Test
@@ -193,33 +193,6 @@ public class IDLDeviceProxyTest {
 
         RenderedImage imgResult = TangoImageUtils.toRenderedImage_sRGB(result.getData(), result.getWidth(), result.getHeight());
         ImageIO.write(imgResult, "png", new File("target/result_image.png"));
-    }
-
-    @Test
-    public void testReadWriteImage_BMP(){
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
-
-        TangoImage<int[]> image = (TangoImage<int[]>) instance.readAttribute("ushort_image");
-
-        instance.writeTangoImageAsBMP("target/testReadWriteImage_result.bmp", image);
-    }
-
-    @Test
-    public void testReadWriteImage_JPEG(){
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
-
-        TangoImage<int[]> image = (TangoImage<int[]>) instance.readAttribute("ushort_image");
-
-        instance.writeTangoImageAsJPEG("target/testReadWriteImage_result.jpeg", image);
-    }
-
-    //@Test
-    public void testReadWriteImage_TIFF(){
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
-
-        TangoImage<?> image = (TangoImage<?>) instance.readAttribute("float_image");
-
-        instance.writeTangoImageAsTIFF("target/testReadWriteImage_result.tiff", image);
     }
 
     //@Test
@@ -325,15 +298,17 @@ public class IDLDeviceProxyTest {
 
 
     @Test
-    public void testStatusServerClient() throws Exception{
+    public void testStatusServerClient() throws Exception {
         IDLDeviceProxy proxy = new IDLDeviceProxy("tango://hzgc103k:10000/test/p07/1.0.6");
-        try(BufferedWriter writer = Files.newBufferedWriter(Paths.get("D:\\Projects\\hzg.wpn.projects\\idl2tango\\target\\testStatusServerClient.out"), Charset.forName("UTF-8"))) {
+        BufferedWriter writer = null;
+        try {
+            writer = Files.newBufferedWriter(Paths.get("D:\\Projects\\hzg.wpn.projects\\idl2tango\\target\\testStatusServerClient.out"), Charset.forName("UTF-8"));
             while (true) {
 
                 long start = System.nanoTime();
                 String[] data = (String[]) proxy.executeCommand("getLatestSnapshot");
                 long end = System.nanoTime();
-                for(String s : data)
+                for (String s : data)
                     writer.append(s);
 
                 writer.append('\n').append("Respond in (ms):").append(
@@ -341,6 +316,8 @@ public class IDLDeviceProxyTest {
                                 TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS))).append('\n');
                 Thread.sleep(10);
             }
+        }finally {
+            writer.close();
         }
 
     }
