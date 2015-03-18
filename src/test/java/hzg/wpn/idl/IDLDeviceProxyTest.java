@@ -38,7 +38,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -137,7 +141,7 @@ public class IDLDeviceProxyTest {
 
         TangoImage<float[]> result = (TangoImage<float[]>) instance.readAttribute("float_image");
 
-        assertArrayEquals(new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, Arrays.copyOfRange(result.data, 0, 2*4), 0.01F);
+        assertArrayEquals(new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, Arrays.copyOfRange(result.getData(), 0, 2*4), 0.01F);
     }
 
     @Test
@@ -147,11 +151,11 @@ public class IDLDeviceProxyTest {
 
         TangoImage<double[]> image = new TangoImage<double[]>(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6},2,4);
 
-        instance.writeAttribute("double_image", image.data, image.width, image.height);
+        instance.writeAttribute("double_image", image.getData(), image.getWidth(), image.getHeight());
 
         TangoImage<double[]> result = (TangoImage<double[]>) instance.readAttribute("double_image");
 
-        assertArrayEquals(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6}, Arrays.copyOfRange(result.data,0,2*4), 0.0);
+        assertArrayEquals(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6}, Arrays.copyOfRange(result.getData(),0,2*4), 0.0);
     }
 
     @Test
@@ -183,11 +187,11 @@ public class IDLDeviceProxyTest {
 
         TangoImage<int[]> image = TangoImage.from2DArray(pixels);
 
-        instance.writeAttribute("ushort_image", image.data, imgWidth, imgHeight);
+        instance.writeAttribute("ushort_image", image.getData(), imgWidth, imgHeight);
 
         TangoImage<int[]> result = (TangoImage<int[]>) instance.readAttribute("ushort_image");
 
-        RenderedImage imgResult = TangoImageUtils.toRenderedImage_sRGB(result.data, result.width, result.height);
+        RenderedImage imgResult = TangoImageUtils.toRenderedImage_sRGB(result.getData(), result.getWidth(), result.getHeight());
         ImageIO.write(imgResult, "png", new File("target/result_image.png"));
     }
 
@@ -317,5 +321,27 @@ public class IDLDeviceProxyTest {
         System.out.println(outputType);
         outputType = proxy1.readAttributeString("outputType");
         System.out.println(outputType);
+    }
+
+
+    @Test
+    public void testStatusServerClient() throws Exception{
+        IDLDeviceProxy proxy = new IDLDeviceProxy("tango://hzgc103k:10000/test/p07/1.0.6");
+        try(BufferedWriter writer = Files.newBufferedWriter(Paths.get("D:\\Projects\\hzg.wpn.projects\\idl2tango\\target\\testStatusServerClient.out"), Charset.forName("UTF-8"))) {
+            while (true) {
+
+                long start = System.nanoTime();
+                String[] data = (String[]) proxy.executeCommand("getLatestSnapshot");
+                long end = System.nanoTime();
+                for(String s : data)
+                    writer.append(s);
+
+                writer.append('\n').append("Respond in (ms):").append(
+                        Long.toString(
+                                TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS))).append('\n');
+                Thread.sleep(10);
+            }
+        }
+
     }
 }

@@ -28,7 +28,7 @@
 # Allow IDL-Java bridge to use .class files located in my CLASSPATH and also the
 # classes found in the examples .jar file shipped with the bridge
 
-JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2TangoJavaClient-1.0.4.jar
+JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2TangoJavaClient-1.0.5-SNAPSHOT.jar
 
 
 
@@ -74,7 +74,7 @@ JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2Tan
 
 
 #use JAVA_HOME
-#JVM LibLocation = C:\Program Files\ITT\IDL\IDL81\bin\bin.x86_64\jre\bin\server\
+#JVM LibLocation = C:\Programs\Java\jdk1.8.0_05\bin
 
 
 ###################
@@ -102,7 +102,9 @@ JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2Tan
 #      options to be used by processes launched by the IDL Workbench,
 #      add the option flags to the idlde.ini file for your system.
 
-#JVM Option1 = -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
+#JVM Option1 = -Xdebug
+#JVM Option2 = -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
+#JVM Option1 = -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
 
 
 ###########################
@@ -145,4 +147,4 @@ Bridge Logging = CONFIG
 #                    - True  (Bridge resets when the .FULL_RESET_SESSION
 #                             executive command is executed)
 
-Restart Bridge = True
+#Restart Bridge = True

@@ -29,19 +29,16 @@
 
 package hzg.wpn.idl;
 
+import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevSource;
 import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.data.type.TangoImage;
 import org.tango.client.ez.proxy.TangoProxies;
 import org.tango.client.ez.proxy.TangoProxy;
 import org.tango.client.ez.proxy.TangoProxyException;
-import org.tango.client.ez.util.TangoImageUtils;
+import org.tango.client.ez.util.TangoUtils;
 
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -54,15 +51,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class IDLDeviceProxy {
     private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler();
 
-    private final TangoProxy proxy;
-    private final TangoDeviceAttributeReader reader;
-    private final TangoDeviceAttributeWriter writer;
-    private final TangoDeviceCommandExecutor executor;
-    private final TangoDevStateAwaitor awaitor;
+    final TangoProxy proxy;
+    final TangoDeviceAttributeReader reader;
+    final TangoDeviceAttributeWriter writer;
+    final TangoDeviceCommandExecutor executor;
+    final TangoDevStateAwaitor awaitor;
 
-    private final int version = 104;
+    private final int version = 105;
 
-    private final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
+    final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
 
     /**
      * Creates a new instance of the IDLDeviceProxy.
@@ -88,8 +85,27 @@ public class IDLDeviceProxy {
         }
     }
 
+    /**
+     *
+     * @return last exception message (localized)
+     */
     public String getExceptionMessage() {
-        return lastException.get().getMessage();
+        return lastException.get().getLocalizedMessage();
+    }
+
+    /**
+     *
+     *
+     * @return a tango version of the proxied tango device
+     */
+    public int getTangoVersion(){
+        try {
+            return proxy.toDeviceProxy().getTangoVersion();
+        } catch (DevFailed devFailed) {
+            Exception ex = TangoUtils.convertDevFailedToException(devFailed);
+            lastException.set(ex);
+            throw handler.handle(ex);
+        }
     }
 
     /**
@@ -108,40 +124,6 @@ public class IDLDeviceProxy {
             throw handler.handle(ex);
         }
     }
-
-    public static void writeTangoImageAsBMP(String path, TangoImage<int[]> image){
-        try {
-            boolean isDone = ImageIO.write(
-                    TangoImageUtils.toRenderedImage_sRGB(image.data, image.width, image.height),
-                    "bmp", new File(path));
-            if(!isDone) throw handler.handle(new RuntimeException("Can not write image: no writer has been found!"));
-        } catch (Exception ex) {
-            throw handler.handle(ex);
-        }
-    }
-
-    public static void writeTangoImageAsJPEG(String path, TangoImage<int[]> image){
-        try {
-            boolean isDone = ImageIO.write(
-                    TangoImageUtils.toRenderedImage_sRGB(image.data, image.width, image.height),
-                    "jpeg", new File(path));
-            if(!isDone) throw handler.handle(new RuntimeException("Can not write image: no writer has been found!"));
-        } catch (Exception ex) {
-            throw handler.handle(ex);
-        }
-    }
-
-    public static void writeTangoImageAsTIFF(String path, TangoImage<?> image){
-        try {
-            boolean isDone = ImageIO.write(
-                    TangoImageUtils.toRenderedImageDedicatedComponents_GRAY(image.data, image.width, image.height),
-                    "tif", new File(path));
-            if(!isDone) throw handler.handle(new RuntimeException("Can not write image: no writer has been found!"));
-        } catch (Exception ex) {
-            throw handler.handle(ex);
-        }
-    }
-
 
     //==========================
     // waitUntil
