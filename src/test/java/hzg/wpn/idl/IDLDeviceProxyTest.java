@@ -295,30 +295,4 @@ public class IDLDeviceProxyTest {
         outputType = proxy1.readAttributeString("outputType");
         System.out.println(outputType);
     }
-
-
-    @Test
-    public void testStatusServerClient() throws Exception {
-        IDLDeviceProxy proxy = new IDLDeviceProxy("tango://hzgc103k:10000/test/p07/1.0.6");
-        BufferedWriter writer = null;
-        try {
-            writer = Files.newBufferedWriter(Paths.get("D:\\Projects\\hzg.wpn.projects\\idl2tango\\target\\testStatusServerClient.out"), Charset.forName("UTF-8"));
-            while (true) {
-
-                long start = System.nanoTime();
-                String[] data = (String[]) proxy.executeCommand("getLatestSnapshot");
-                long end = System.nanoTime();
-                for (String s : data)
-                    writer.append(s);
-
-                writer.append('\n').append("Respond in (ms):").append(
-                        Long.toString(
-                                TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS))).append('\n');
-                Thread.sleep(10);
-            }
-        }finally {
-            writer.close();
-        }
-
-    }
 }
