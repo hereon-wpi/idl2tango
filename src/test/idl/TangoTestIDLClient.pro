@@ -8,7 +8,9 @@ pro TangoTestIDLClient
   
   print, joDeviceProxy->getVersion()
   print, joDeviceProxy->getTangoVersion()
-  
+
+  joDeviceProxy->waitUntil, "RUNNING"
+
   ;IF (OBJ_CLASS(joStr) NE "IDLJAVAOBJECT$JAVA_LANG_STRING") THEN BEGIN
   ;  PRINT, '(ERR) creating java.lang.String.  joStr =', joStr
   ;ENDIF
