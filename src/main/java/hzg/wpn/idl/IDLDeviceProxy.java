@@ -56,10 +56,8 @@ public class IDLDeviceProxy {
     final TangoDeviceAttributeWriter writer;
     final TangoDeviceCommandExecutor executor;
     final TangoDevStateAwaitor awaitor;
-
-    private final int version = 105;
-
     final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
+    private final int version = 105;
 
     /**
      * Creates a new instance of the IDLDeviceProxy.
@@ -74,16 +72,34 @@ public class IDLDeviceProxy {
      * @throws IDLDeviceProxyRuntimeException
      */
     public IDLDeviceProxy(String name) {
+        this(name, false);
+    }
+
+    /**
+     * Creates a new instance of the IDLDeviceProxy.
+     * <p/>
+     * Usage:
+     * <p/>
+     * <code>
+     * joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy", "sys/tg_test/1", true)
+     * </code>
+     *
+     * @param name                  a Tango device full name, e.g. tango://{TANGO_HOST}/{SERVER_NAME}/{DOMAIN}/{DEVICE_ID}
+     * @param useEventsForWaitUntil true if event driven WaitUntil is desired
+     * @throws IDLDeviceProxyRuntimeException
+     */
+    public IDLDeviceProxy(String name, boolean useEventsForWaitUntil) {
         try {
             this.proxy = TangoProxies.newDeviceProxyWrapper(name);
             this.reader = new TangoDeviceAttributeReader(this.proxy, handler);
             this.writer = new TangoDeviceAttributeWriter(this.proxy, handler);
             this.executor = new TangoDeviceCommandExecutor(this.proxy, handler);
-            this.awaitor = new EventDevStateAwaitor(this.proxy, handler);
+            this.awaitor = useEventsForWaitUntil ? new EventDevStateAwaitor(this.proxy, handler) : new PollDevStateAwaitor(this.proxy, handler);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
         }
     }
+
 
     /**
      *
