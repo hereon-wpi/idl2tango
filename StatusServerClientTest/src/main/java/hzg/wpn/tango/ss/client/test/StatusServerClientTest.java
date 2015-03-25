@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class StatusServerClientTest {
     public static void main(String[] args) throws Exception{
-        IDLDeviceProxy proxy = new IDLDeviceProxy("tango://hzgc103k:10000/test/p07/1.0.6");
+        IDLDeviceProxy proxy = new IDLDeviceProxy(args[0]);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(Paths.get("testStatusServerClient.out"), Charset.forName("UTF-8"));
