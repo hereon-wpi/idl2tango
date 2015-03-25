@@ -57,7 +57,6 @@ public class IDLDeviceProxy {
     final TangoDeviceCommandExecutor executor;
     final TangoDevStateAwaitor awaitor;
     final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
-    private final int version = 105;
 
     /**
      * Creates a new instance of the IDLDeviceProxy.
@@ -1323,7 +1322,7 @@ public class IDLDeviceProxy {
         }
     }
 
-    public int getVersion(){
-        return version;
+    public String getVersion() {
+        return getClass().getPackage().getImplementationVersion();
     }
 }
