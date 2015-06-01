@@ -29,7 +29,6 @@
 
 package hzg.wpn.idl;
 
-import org.slf4j.Logger;
 import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.proxy.*;
 
@@ -40,6 +39,8 @@ import org.tango.client.ez.proxy.*;
 public class EventDevStateAwaitor extends TangoDevStateAwaitor {
 
     private final Object internalLock = new Object();
+    private volatile Throwable error = null;
+    private volatile TangoEventListener<EnumDevState> listener;
 
     public EventDevStateAwaitor(TangoProxy proxy, TangoProxyExceptionHandler handler) {
         super(proxy, handler);
@@ -89,9 +90,6 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
         }
     }
 
-    private volatile Throwable error = null;
-    private volatile TangoEventListener<EnumDevState> listener;
-
     private void subscribeToStateChange() throws TangoProxyException {
         final Thread mainThread = Thread.currentThread();
         getProxy().subscribeToEvent(STATE, TangoEvent.CHANGE);
@@ -107,7 +105,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(Exception e) {
                 error = e;
                 //does not work in IDL
 //                getLog().error(e.getMessage(),e);
