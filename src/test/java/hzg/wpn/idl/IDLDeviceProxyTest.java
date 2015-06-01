@@ -29,6 +29,8 @@
 
 package hzg.wpn.idl;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.tango.client.ez.data.type.ImageTangoDataTypes;
 import org.tango.client.ez.data.type.TangoImage;
@@ -38,11 +40,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -54,9 +53,72 @@ import static org.junit.Assert.assertArrayEquals;
  * @since 05.06.12
  */
 public class IDLDeviceProxyTest {
+    public static final String TANGO_DEV_NAME = "test/local/0";
+    public static final int TANGO_PORT = 16547;
+    public static final String TEST_TANGO = "tango://localhost:" + TANGO_PORT + "/" + TANGO_DEV_NAME + "#dbase=no";
+    public static final String X64 = "x64";
+    public static final String LINUX = "linux";
+    public static final String WINDOWS_7 = "windows 7";
+    public static final String AMD64 = "amd64";
+
+    private static Process PRC;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        String crtDir = System.getProperty("user.dir");
+        //TODO define executable according to current OS
+        String os = System.getProperty("os.name");
+        String arch = System.getProperty("os.arch");
+        StringBuilder bld = new StringBuilder(crtDir);
+        //TODO other platforms or rely on the environmet
+        if (LINUX.equalsIgnoreCase(os) && AMD64.equals(arch))
+            bld.append("/exec/tango/debian/").append("TangoTest");
+        else if (WINDOWS_7.equalsIgnoreCase(os) && AMD64.equals(arch))
+            bld.append("\\exec\\tango\\win64\\").append("TangoTest");
+        else
+            throw new RuntimeException(String.format("Unsupported platform: name=%s arch=%s", os, arch));
+
+        PRC = new ProcessBuilder(bld.toString(), "test", "-ORBendPoint", "giop:tcp::" + TANGO_PORT, "-nodb", "-dlist", TANGO_DEV_NAME)
+                .start();
+
+        //drain slave's out stream
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                char bite;
+                try {
+                    while ((bite = (char) PRC.getInputStream().read()) > -1) {
+                        System.out.print(bite);
+                    }
+                } catch (IOException ignore) {
+                }
+            }
+        }).start();
+
+        //drains slave's err stream
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                char bite;
+                try {
+                    while ((bite = (char) PRC.getErrorStream().read()) > -1) {
+                        System.err.print(bite);
+                    }
+                } catch (IOException ignore) {
+                }
+            }
+        }).start();
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        PRC.destroy();
+    }
+
+
     @Test(expected = RuntimeException.class)
     public void testReadAttribute_Failed() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         String result = (String) instance.readAttribute("string_scalarxxx");//no such attribute
 
@@ -65,7 +127,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_String() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.writeAttribute("string_scalar", "Some test value");
         String result = (String) instance.readAttribute("string_scalar");
@@ -75,7 +137,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_DoubleArr() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.writeAttribute("double_spectrum", new double[]{1.0, 1.1, 1.2, 1.3, 1.4});
         double[] result = (double[]) instance.readAttribute("double_spectrum");
@@ -85,7 +147,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_ULong() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.writeAttribute("ulong_scalar", 1234L);
         long result = (Long) instance.readAttribute("ulong_scalar");
@@ -96,7 +158,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_DoubleSpectrum() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         int size = 256; //sys/tg_test/1 has hardcoded maximum value of 256
         double[] sinus = new double[size];
@@ -114,7 +176,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_Int() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.writeAttribute("long_scalar_w", 1234);
         int result = instance.readAttributeInteger("long_scalar_w");
@@ -124,7 +186,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_Double() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.writeAttribute("double_scalar_w", 3.14D);
 
@@ -135,7 +197,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_FloatImage() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.writeAttribute("float_image", new float[]{0.1F, 0.2F, 0.3F, 0.4F, 0.5F, 0.6F, 0.5F, 0.6F}, 2, 4);
 
@@ -146,7 +208,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_DoubleImage() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
 
         TangoImage<double[]> image = new TangoImage<double[]>(new double[]{0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.5, 0.6},2,4);
@@ -160,7 +222,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testWriteReadAttribute_Image() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
 
         BufferedImage img = ImageIO.read(IDLDeviceProxy.class.getResourceAsStream("/images/check.png"));
@@ -218,7 +280,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testExecuteCommand() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         String result = (String) instance.executeCommand("DevString", "Some test value");
 
@@ -227,7 +289,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testExecuteCommand_Void() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         Void result = (Void) instance.executeCommand("DevVoid");
 
@@ -236,7 +298,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testExecuteCommand_State() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         String result = instance.executeCommand("State").toString();
 
@@ -245,7 +307,7 @@ public class IDLDeviceProxyTest {
 
     //@Test
     public void testAwaitUntil() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         long nanosStart = System.nanoTime();
         instance.waitUntil("running");
@@ -257,7 +319,7 @@ public class IDLDeviceProxyTest {
 
     //@Test
     public void testAwaitUntilNot() throws Exception {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         long nanosStart = System.nanoTime();
         //device is started in fault state
@@ -270,7 +332,7 @@ public class IDLDeviceProxyTest {
 
     @Test
     public void testSetTimeout() {
-        IDLDeviceProxy instance = new IDLDeviceProxy("sys/tg_test/1");
+        IDLDeviceProxy instance = new IDLDeviceProxy(TEST_TANGO);
 
         instance.setTimeout(9000);
 
