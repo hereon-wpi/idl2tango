@@ -42,6 +42,7 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -356,5 +357,16 @@ public class IDLDeviceProxyTest {
         System.out.println(outputType);
         outputType = proxy1.readAttributeString("outputType");
         System.out.println(outputType);
+    }
+
+    //@Test
+    public void testToTangoProxy() throws Exception {
+        IDLDeviceProxy idlDeviceProxy = new IDLDeviceProxy(TEST_TANGO);
+        Object proxy = IDLDeviceProxyHelper.toTangoProxy(idlDeviceProxy);
+
+        Method get_double_scalar = proxy.getClass().getDeclaredMethod("getdouble_scalar");
+        assertTrue(get_double_scalar != null);
+
+        System.out.println(get_double_scalar.invoke(proxy));
     }
 }
