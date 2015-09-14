@@ -28,14 +28,12 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
   -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>hzg.wpn.xenv</groupId>
     <artifactId>IDL2TangoJavaClient</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <developers>
@@ -52,7 +50,7 @@
         <connection>scm:hg:https://bitbucket.org/hzgwpn/idl2java</connection>
         <developerConnection>scm:hg:ssh://hg@bitbucket.org/hzgwpn/idl2java</developerConnection>
         <url>ssh://hg@bitbucket.org/hzgwpn/idl2java</url>
-        <tag>${version}</tag>
+        <tag>IDL2TangoJavaClient-1.1.1</tag>
     </scm>
 
     <distributionManagement>
