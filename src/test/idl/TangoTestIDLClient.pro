@@ -17,7 +17,7 @@ pro TangoTestIDLClient
   
   ; get the string and show it in IDL
   ;PRINT, joClientFactory->createClient("sys/tg_test/1")
-  
+  joObject = joDeviceProxy->readAttribute("throw_exception")
   joObject = joDeviceProxy->readAttribute("ushort_image_ro")
   
   ;joImage = joObject->toRenderedImage_sRGB()

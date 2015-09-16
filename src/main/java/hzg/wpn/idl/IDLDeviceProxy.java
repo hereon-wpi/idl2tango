@@ -32,12 +32,8 @@ package hzg.wpn.idl;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.filter.LevelFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
-import ch.qos.logback.core.spi.FilterReply;
 import fr.esrf.Tango.DevFailed;
 import fr.esrf.Tango.DevSource;
 import org.slf4j.Logger;
@@ -110,9 +106,6 @@ public class IDLDeviceProxy {
     private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler(logger);
 
     final TangoProxy proxy;
-    final TangoDeviceAttributeReader reader;
-    final TangoDeviceAttributeWriter writer;
-    final TangoDeviceCommandExecutor executor;
     final TangoDevStateAwaitor awaitor;
     final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
 
@@ -149,9 +142,6 @@ public class IDLDeviceProxy {
         logger.debug("Creating proxy for device[{},useEventsForWaitUntil={}]", name, useEventsForWaitUntil);
         try {
             this.proxy = TangoProxies.newDeviceProxyWrapper(name);
-            this.reader = new TangoDeviceAttributeReader(this.proxy, handler);
-            this.writer = new TangoDeviceAttributeWriter(this.proxy, handler);
-            this.executor = new TangoDeviceCommandExecutor(this.proxy, handler);
             this.awaitor = useEventsForWaitUntil ? new EventDevStateAwaitor(this.proxy, handler) : new PollDevStateAwaitor(this.proxy, handler);
         } catch (TangoProxyException devFailed) {
             throw handler.handle(devFailed);
@@ -268,7 +258,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command) {
         try {
-            return executor.command_inout(command);
+            return proxy.executeCommand(command, null);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -290,7 +280,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, String value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -312,7 +302,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, double value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -334,7 +324,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, double[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -356,7 +346,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, long[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -378,7 +368,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, long value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -400,7 +390,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, short value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -422,7 +412,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, float value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -444,7 +434,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, int value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -466,7 +456,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, String[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -488,7 +478,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, float[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -510,7 +500,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, short[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -526,7 +516,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, boolean value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -548,7 +538,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, byte[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -570,7 +560,7 @@ public class IDLDeviceProxy {
      */
     public Object executeCommand(String command, int[] value) {
         try {
-            return executor.command_inout(command, value);
+            return proxy.executeCommand(command, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -597,7 +587,7 @@ public class IDLDeviceProxy {
      */
     public Object readAttribute(String attname) {
         try {
-            return reader.readAttribute(attname);
+            return proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -620,7 +610,7 @@ public class IDLDeviceProxy {
      */
     public float readAttributeFloat(String attname) {
         try {
-            return reader.readAttributeFloat(attname);
+            return proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -643,7 +633,7 @@ public class IDLDeviceProxy {
      */
     public long readAttributeLong(String attname) {
         try {
-            return reader.readAttributeLong(attname);
+            return proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -666,7 +656,7 @@ public class IDLDeviceProxy {
      */
     public short readAttributeShort(String attname) {
         try {
-            return reader.readAttributeShort(attname);
+            return proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -689,7 +679,7 @@ public class IDLDeviceProxy {
      */
     public double readAttributeDouble(String attname) {
         try {
-            return reader.readAttributeDouble(attname);
+            return proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -712,7 +702,7 @@ public class IDLDeviceProxy {
      */
     public int readAttributeInteger(String attname) {
         try {
-            return reader.readAttributeInteger(attname);
+            return (Integer) proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -734,7 +724,7 @@ public class IDLDeviceProxy {
      */
     public String readAttributeState() {
         try {
-            return reader.readAttributeState();
+            return ((EnumDevState) proxy.readAttribute("State")).name();
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -757,7 +747,7 @@ public class IDLDeviceProxy {
      */
     public String readAttributeString(String attname) {
         try {
-            return reader.readAttributeString(attname);
+            return (String) proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -780,7 +770,7 @@ public class IDLDeviceProxy {
      */
     public boolean readAttributeBoolean(String attname) {
         try {
-            return reader.readAttributeBoolean(attname);
+            return (Boolean) proxy.readAttribute(attname);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -807,7 +797,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, boolean value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -829,7 +819,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, byte value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -851,7 +841,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, long value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -873,7 +863,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, double value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -895,7 +885,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, short value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -917,7 +907,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, String value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -939,7 +929,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, float value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -961,7 +951,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, int value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -983,7 +973,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, char value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1005,7 +995,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, double[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1027,7 +1017,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, boolean[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1049,7 +1039,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, int[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1071,7 +1061,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, short[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1093,7 +1083,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, int[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1103,7 +1093,7 @@ public class IDLDeviceProxy {
     public void writeAttribute(String attrName, int[] data, int width, int height){
         try {
             TangoImage<int[]> value = new TangoImage<int[]>(data, width, height);
-            writer.writeAttribute(attrName, value);
+            proxy.writeAttribute(attrName, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1113,7 +1103,7 @@ public class IDLDeviceProxy {
     public void writeAttribute(String attrName, double[] data, int width, int height){
         try {
             TangoImage<double[]> value = new TangoImage<double[]>(data, width, height);
-            writer.writeAttribute(attrName, value);
+            proxy.writeAttribute(attrName, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1123,7 +1113,7 @@ public class IDLDeviceProxy {
     public void writeAttribute(String attrName, float[] data, int width, int height){
         try {
             TangoImage<float[]> value = new TangoImage<float[]>(data, width, height);
-            writer.writeAttribute(attrName, value);
+            proxy.writeAttribute(attrName, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1145,7 +1135,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, String[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1167,7 +1157,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, long[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1189,7 +1179,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, float[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1211,7 +1201,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, byte[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1233,7 +1223,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, short[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1255,7 +1245,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, boolean[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1277,7 +1267,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, byte[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1299,7 +1289,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, String[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1321,7 +1311,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, long[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1343,7 +1333,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, double[][] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1365,7 +1355,7 @@ public class IDLDeviceProxy {
      */
     public void writeAttribute(String name, float[] value) {
         try {
-            writer.writeAttribute(name, value);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
