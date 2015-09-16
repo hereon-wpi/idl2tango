@@ -107,7 +107,7 @@ public class IDLDeviceProxy {
 //        consoleAppender.start();
     }
 
-    private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler();
+    private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler(logger);
 
     final TangoProxy proxy;
     final TangoDeviceAttributeReader reader;
@@ -146,8 +146,7 @@ public class IDLDeviceProxy {
      * @throws IDLDeviceProxyRuntimeException
      */
     public IDLDeviceProxy(String name, boolean useEventsForWaitUntil) {
-        logger.trace("IDLDeviceProxy");
-        logger.debug("Creating proxy for device[$s]", name);
+        logger.debug("Creating proxy for device[{},useEventsForWaitUntil={}]", name, useEventsForWaitUntil);
         try {
             this.proxy = TangoProxies.newDeviceProxyWrapper(name);
             this.reader = new TangoDeviceAttributeReader(this.proxy, handler);

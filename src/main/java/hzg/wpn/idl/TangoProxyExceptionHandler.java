@@ -30,6 +30,8 @@
 package hzg.wpn.idl;
 
 
+import org.slf4j.Logger;
+
 /**
  * Takes {@link Throwable}, prints appropriate information to the logger
  * and returns {@link IDLDeviceProxyRuntimeException}
@@ -38,8 +40,10 @@ package hzg.wpn.idl;
  * @since 07.06.12
  */
 public class TangoProxyExceptionHandler {
+    private final Logger logger;
 
-    public TangoProxyExceptionHandler() {
+    public TangoProxyExceptionHandler(Logger logger) {
+        this.logger = logger;
     }
 
     /**
@@ -50,9 +54,9 @@ public class TangoProxyExceptionHandler {
      * @return {@link IDLDeviceProxyRuntimeException}
      */
     public RuntimeException handle(Throwable exception) {
-        System.err.print("ERROR: ");
+        System.err.println("ERROR: " + exception);
         System.err.println(exception.getMessage());
-        exception.printStackTrace(System.err);
+        logger.error(exception.getMessage(), exception);
         return new IDLDeviceProxyRuntimeException(exception.getMessage());
     }
 }
