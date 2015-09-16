@@ -48,15 +48,14 @@ public class TangoProxyExceptionHandler {
 
     /**
      * Takes {@link Throwable}, prints appropriate information to the logger
-     * and returns {@link IDLDeviceProxyRuntimeException}
+     * and returns {@link java.lang.RuntimeException}
      *
      * @param exception cause
-     * @return {@link IDLDeviceProxyRuntimeException}
+     * @return {@link java.lang.RuntimeException}
      */
     public RuntimeException handle(Throwable exception) {
-        System.err.println("ERROR: " + exception);
-        System.err.println(exception.getMessage());
+        System.err.println("ERROR: " + exception.getMessage());
         logger.error(exception.getMessage(), exception);
-        return new IDLDeviceProxyRuntimeException(exception.getMessage());
+        return new RuntimeException(exception);
     }
 }
