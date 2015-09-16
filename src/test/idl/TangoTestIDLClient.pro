@@ -4,7 +4,7 @@ pro TangoTestIDLClient
   SETENV, 'IDLJAVAB_CONFIG=D:\Projects\hzg.wpn.projects\idl2tango\src\test\idl\idljavabrc'
   
   ; Create a StatusServer proxy
-  joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy","tango://hzgc103k:10000/sys/tg_test/1")
+  joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy","tango://hzgcttest:10000/sys/tg_test/1")
   
   print, joDeviceProxy->getVersion()
   print, joDeviceProxy->getTangoVersion()
