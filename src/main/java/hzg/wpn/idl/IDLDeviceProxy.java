@@ -119,7 +119,7 @@ public class IDLDeviceProxy {
      * </code>
      *
      * @param name a Tango device full name, e.g. tango://{TANGO_HOST}/{SERVER_NAME}/{DOMAIN}/{DEVICE_ID}
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public IDLDeviceProxy(String name) {
         this(name, false);
@@ -136,7 +136,7 @@ public class IDLDeviceProxy {
      *
      * @param name                  a Tango device full name, e.g. tango://{TANGO_HOST}/{SERVER_NAME}/{DOMAIN}/{DEVICE_ID}
      * @param useEventsForWaitUntil true if event driven WaitUntil is desired
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public IDLDeviceProxy(String name, boolean useEventsForWaitUntil) {
         logger.debug("Creating proxy for device[{},useEventsForWaitUntil={}]", name, useEventsForWaitUntil);
@@ -176,6 +176,7 @@ public class IDLDeviceProxy {
      * @param timeout in milliseconds
      */
     public void setTimeout(int timeout) {
+        logger.trace("Set timeout={}", timeout);
         try {
             Field field = proxy.getClass().getDeclaredField("proxy");
             field.setAccessible(true);
@@ -204,12 +205,14 @@ public class IDLDeviceProxy {
      * </code>
      *
      * @param state desired state in String format, i.e. "ON","RUNNING" etc (case insensitive)
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void waitUntil(String state) {
+        logger.trace("Waiting until {}", state);
         try {
             EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
             awaitor.waitUntil(targetDevState);
+            logger.trace("Done waiting.");
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -227,12 +230,14 @@ public class IDLDeviceProxy {
      * </code>
      *
      * @param state state in String format, i.e. "ON","RUNNING" etc
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void waitUntilNot(String state) {
+        logger.trace("Waiting until not {}", state);
         try {
             EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
             awaitor.waitUntilNot(targetDevState);
+            logger.trace("Done waiting.");
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -254,9 +259,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command) {
+        logger.trace("Executing command({})","Void");
         try {
             return proxy.executeCommand(command, null);
         } catch (Exception e) {
@@ -276,9 +282,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, String value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -298,9 +305,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, double value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -320,9 +328,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, double[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -342,9 +351,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, long[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -364,9 +374,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, long value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -386,9 +397,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, short value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -408,9 +420,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, float value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -430,9 +443,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, int value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -452,9 +466,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, String[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -474,9 +489,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, float[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -496,9 +512,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, short[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -512,9 +529,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, boolean value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -534,9 +552,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, byte[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -556,9 +575,10 @@ public class IDLDeviceProxy {
      *
      * @param command a command name
      * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object executeCommand(String command, int[] value) {
+        logger.trace("Executing command({})",value);
         try {
             return proxy.executeCommand(command, value);
         } catch (Exception e) {
@@ -583,9 +603,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return an Object that represents the attribute value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public Object readAttribute(String attname) {
+        logger.trace("Reading attribute[{}]", attname);
         try {
             return proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -606,9 +627,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return float
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public float readAttributeFloat(String attname) {
+        logger.trace("Reading float attribute[{}]", attname);
         try {
             return proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -629,9 +651,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return long (IDL: long64)
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public long readAttributeLong(String attname) {
+        logger.trace("Reading long attribute[{}]", attname);
         try {
             return proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -652,9 +675,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return short
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public short readAttributeShort(String attname) {
+        logger.trace("Reading short attribute[{}]", attname);
         try {
             return proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -675,9 +699,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return double
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public double readAttributeDouble(String attname) {
+        logger.trace("Reading double attribute[{}]", attname);
         try {
             return proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -698,9 +723,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return int (IDL: long)
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public int readAttributeInteger(String attname) {
+        logger.trace("Reading int attribute[{}]", attname);
         try {
             return (Integer) proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -720,9 +746,10 @@ public class IDLDeviceProxy {
      * </code>
      *
      * @return String representation of the State, i.e. "ON", "RUNNING" etc
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public String readAttributeState() {
+        logger.trace("Reading State");
         try {
             return ((EnumDevState) proxy.readAttribute("State")).name();
         } catch (Exception e) {
@@ -743,9 +770,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return String
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public String readAttributeString(String attname) {
+        logger.trace("Reading String attribute[{}]", attname);
         try {
             return (String) proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -766,9 +794,10 @@ public class IDLDeviceProxy {
      *
      * @param attname an attribute name (case sensitive)
      * @return boolean (IDL: integer)
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public boolean readAttributeBoolean(String attname) {
+        logger.trace("Reading boolean attribute[{}]", attname);
         try {
             return (Boolean) proxy.readAttribute(attname);
         } catch (Exception e) {
@@ -793,9 +822,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, boolean value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -815,9 +845,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, byte value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -837,9 +868,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, long value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -859,9 +891,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, double value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -881,9 +914,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, short value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -903,9 +937,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, String value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -925,9 +960,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, float value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -947,9 +983,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, int value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -969,9 +1006,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, char value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -991,9 +1029,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, double[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1013,9 +1052,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, boolean[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1035,9 +1075,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, int[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1057,9 +1098,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, short[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1079,9 +1121,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, int[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1091,6 +1134,7 @@ public class IDLDeviceProxy {
     }
 
     public void writeAttribute(String attrName, int[] data, int width, int height){
+        logger.trace("Writing an int image[{},{}x{}]", attrName, width, height);
         try {
             TangoImage<int[]> value = new TangoImage<int[]>(data, width, height);
             proxy.writeAttribute(attrName, value);
@@ -1101,6 +1145,7 @@ public class IDLDeviceProxy {
     }
 
     public void writeAttribute(String attrName, double[] data, int width, int height){
+        logger.trace("Writing a double image[{},{}x{}]", attrName, width, height);
         try {
             TangoImage<double[]> value = new TangoImage<double[]>(data, width, height);
             proxy.writeAttribute(attrName, value);
@@ -1111,6 +1156,7 @@ public class IDLDeviceProxy {
     }
 
     public void writeAttribute(String attrName, float[] data, int width, int height){
+        logger.trace("Writing a float image[{},{}x{}]", attrName, width, height);
         try {
             TangoImage<float[]> value = new TangoImage<float[]>(data, width, height);
             proxy.writeAttribute(attrName, value);
@@ -1131,9 +1177,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, String[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1153,9 +1200,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, long[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1175,9 +1223,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, float[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1197,9 +1246,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, byte[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1219,9 +1269,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, short[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1241,9 +1292,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, boolean[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1263,9 +1315,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, byte[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1285,9 +1338,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, String[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1307,9 +1361,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, long[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1329,9 +1384,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, double[][] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1351,9 +1407,10 @@ public class IDLDeviceProxy {
      *
      * @param name  an attribute name
      * @param value a value
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public void writeAttribute(String name, float[] value) {
+        logger.trace("Writing attribute[{}]={}", name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1363,6 +1420,7 @@ public class IDLDeviceProxy {
     }
 
     public void setSource(int srcId) {
+        logger.trace("Set source={} aka {}", srcId, DevSource.from_int(srcId).toString());
         try {
             proxy.toDeviceProxy().set_source(DevSource.from_int(srcId));
         } catch (Exception e) {

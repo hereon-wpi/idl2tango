@@ -54,7 +54,7 @@ public abstract class TangoDevStateAwaitor {
      * Blocks current thread until device state changes to targetState
      *
      * @param targetState wait until the state
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public abstract void waitUntil(EnumDevState targetState);
 
@@ -62,7 +62,7 @@ public abstract class TangoDevStateAwaitor {
      * Blocks current thread until the device is in targetState
      *
      * @param targetState current device state
-     * @throws IDLDeviceProxyRuntimeException
+     * @throws RuntimeException
      */
     public abstract void waitUntilNot(EnumDevState targetState);
 
