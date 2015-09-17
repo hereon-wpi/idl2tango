@@ -45,6 +45,7 @@ import org.tango.client.ez.proxy.TangoProxy;
 import org.tango.client.ez.proxy.TangoProxyException;
 import org.tango.client.ez.util.TangoUtils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -63,6 +64,29 @@ public class IDLDeviceProxy {
     final TangoProxy proxy;
     final TangoDevStateAwaitor awaitor;
     final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
+
+    /**
+     * Changes current log output file to the specified one
+     *
+     * @param fileName
+     */
+    public static void setLogFile(String fileName){
+        File file = new File(fileName);
+
+        if(!file.getParentFile().exists()) file.getParentFile().mkdirs();
+
+        System.out.println("Set new log output file=" + file);
+        LoggerConfiguration.setLogFile(fileName);
+    }
+
+    /**
+     * Changes log level for IDL2Tango classes
+     *
+     * @param level
+     */
+    public static void setLogLevel(String level){
+        LoggerConfiguration.setLogLevel(Level.valueOf(level.toUpperCase()));
+    }
 
     /**
      * Creates a new instance of the IDLDeviceProxy.

@@ -6,6 +6,9 @@ pro TangoTestIDLClient
   ; Create a StatusServer proxy
   joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy","tango://hzgcttest:10000/sys/tg_test/1")
   
+  joDeviceProxy->setLogFile, "D:\Projects\hzg.wpn.projects\idl2tango\target\log"
+  joDeviceProxy->setLogLevel, "trace"
+  
   print, joDeviceProxy->getVersion()
   print, joDeviceProxy->getTangoVersion()
 
@@ -17,7 +20,18 @@ pro TangoTestIDLClient
   
   ; get the string and show it in IDL
   ;PRINT, joClientFactory->createClient("sys/tg_test/1")
-  joObject = joDeviceProxy->readAttribute("throw_exception")
+  ;joObject = joDeviceProxy->readAttribute("throw_exception")
+  
+  
+  print, joDeviceProxy->readAttributeDouble("double_scalar")
+  
+  joDeviceProxy->setLogLevel, "error"
+  
+  
+  print, joDeviceProxy->readAttributeInteger("long_scalar")
+  
+  joDeviceProxy->readAttribute, "throw_exception"
+  
   joObject = joDeviceProxy->readAttribute("ushort_image_ro")
   
   ;joImage = joObject->toRenderedImage_sRGB()

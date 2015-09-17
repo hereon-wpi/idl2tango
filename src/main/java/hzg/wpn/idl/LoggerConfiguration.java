@@ -24,6 +24,7 @@ public class LoggerConfiguration {
         FileAppender<ILoggingEvent> fileAppender =
                 new FileAppender<ILoggingEvent>();
 
+        fileAppender.setName("file");
         //start new file each run
         fileAppender.setAppend(false);
 
@@ -64,5 +65,24 @@ public class LoggerConfiguration {
 //        consoleAppender.start();
 
         return LoggerFactory.getLogger(clazz);
+    }
+
+    public static void setLogFile(String file){
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        ch.qos.logback.classic.Logger root = lc.getLogger("root");
+
+        FileAppender<?> fileAppender = (FileAppender<?>)
+                root.getAppender("file");
+
+
+        fileAppender.setFile(file);
+        fileAppender.start();
+    }
+
+    public static void setLogLevel(Level level) {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        lc.getLogger("hzg.wpn.idl").setLevel(level);
     }
 }
