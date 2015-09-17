@@ -31,6 +31,7 @@ package hzg.wpn.idl;
 
 
 import org.tango.client.ez.data.EnumDevState;
+import org.tango.client.ez.proxy.NoSuchAttributeException;
 import org.tango.client.ez.proxy.TangoProxy;
 import org.tango.client.ez.proxy.TangoProxyException;
 
@@ -56,7 +57,8 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
                 throw getHandler().handle(devFailed);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.err.println("ERROR: Awaiting has been interrupted.");
+                throw getHandler().handle(e);
+            } catch (NoSuchAttributeException e) {
                 throw getHandler().handle(e);
             }
         }
@@ -76,13 +78,14 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
                 throw getHandler().handle(devFailed);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.err.println("ERROR: Awaiting has been interrupted.");
+                throw getHandler().handle(e);
+            } catch (NoSuchAttributeException e) {
                 throw getHandler().handle(e);
             }
         }
     }
 
-    private void pollCrtState() throws TangoProxyException {
+    private void pollCrtState() throws TangoProxyException, NoSuchAttributeException {
         EnumDevState crtState = getProxy().readAttribute(STATE);
         setCrtDevState(crtState);
     }

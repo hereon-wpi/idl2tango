@@ -54,8 +54,8 @@ public class TangoProxyExceptionHandler {
      * @return {@link java.lang.RuntimeException}
      */
     public RuntimeException handle(Throwable exception) {
-        System.err.println("ERROR: " + exception.getMessage());
-        logger.error(exception.getMessage(), exception);
+        System.err.println(exception.toString());
+        logger.error(exception.getClass().getSimpleName(), exception);
         return new RuntimeException(exception);
     }
 }

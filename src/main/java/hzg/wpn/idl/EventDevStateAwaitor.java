@@ -63,8 +63,9 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             throw getHandler().handle(devFailed);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.print("ERROR: Awaiting has been interrupted.");
             throw getHandler().handle(error != null ? error : e);
+        } catch (NoSuchAttributeException e) {
+            throw getHandler().handle(e);
         }
     }
 
@@ -85,12 +86,13 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
             throw getHandler().handle(devFailed);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("ERROR: Awaiting has been interrupted.");
             throw getHandler().handle(error != null ? error : e);
+        } catch (NoSuchAttributeException e) {
+            throw getHandler().handle(e);
         }
     }
 
-    private void subscribeToStateChange() throws TangoProxyException {
+    private void subscribeToStateChange() throws TangoProxyException, NoSuchAttributeException {
         final Thread mainThread = Thread.currentThread();
         getProxy().subscribeToEvent(STATE, TangoEvent.CHANGE);
         getProxy().addEventListener(STATE, TangoEvent.CHANGE, listener = new TangoEventListener<EnumDevState>() {

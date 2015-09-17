@@ -25,7 +25,7 @@ pro TangoTestIDLClient
   
   print, joDeviceProxy->readAttributeDouble("double_scalar")
   
-  joDeviceProxy->setLogLevel, "error"
+  ;joDeviceProxy->setLogLevel, "error"
   
   
   print, joDeviceProxy->readAttributeInteger("long_scalar")
