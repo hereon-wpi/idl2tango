@@ -56,52 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 05.06.12
  */
 public class IDLDeviceProxy {
-    private static final Logger logger = LoggerFactory.getLogger(IDLDeviceProxy.class);
-
-    //configure logback logging
-    static {
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        //setup file appender
-        FileAppender<ILoggingEvent> fileAppender =
-                new FileAppender<ILoggingEvent>();
-
-        fileAppender.setFile((System.getenv("XENV_ROOT") != null ?
-                System.getenv("XENV_ROOT") : System.getProperty("user.home"))  + "/idl2tango.log");
-
-        PatternLayout pl = new PatternLayout();
-        pl.setPattern("%p %d{dd-MM-yyyy HH:mm:ss,SSS} [%t - %C{1}] %m%n");
-        pl.setContext(lc);
-        pl.start();
-
-        fileAppender.setContext(lc);
-        fileAppender.setLayout(pl);
-
-        fileAppender.start();
-        //set levels
-        lc.getLogger("org.jacorb").setLevel(Level.ERROR);
-        lc.getLogger("org.tango").setLevel(Level.INFO);
-        lc.getLogger("org.quartz").setLevel(Level.ERROR);
-        lc.getLogger("net.sf.ehcache").setLevel(Level.ERROR);
-        lc.getLogger("hzg.wpn.idl").setLevel(Level.TRACE);
-
-        //setup root logger
-        ch.qos.logback.classic.Logger root = lc.getLogger("root");
-        root.addAppender(fileAppender);
-        root.setLevel(Level.DEBUG);
-
-        //disable console output
-        root.detachAppender("console");
-//        Appender<ILoggingEvent> consoleAppender = root.getAppender("console");
-//
-//        consoleAppender.stop();
-//        LevelFilter levelFilter = new LevelFilter();
-//        levelFilter.setLevel(Level.ERROR);
-//        levelFilter.setOnMatch(FilterReply.ACCEPT);
-//        levelFilter.setOnMismatch(FilterReply.DENY);
-//        consoleAppender.addFilter(levelFilter);
-//        consoleAppender.start();
-    }
+    private static final Logger logger = LoggerConfiguration.createLogger(IDLDeviceProxy.class);
 
     private static final TangoProxyExceptionHandler handler = new TangoProxyExceptionHandler(logger);
 
