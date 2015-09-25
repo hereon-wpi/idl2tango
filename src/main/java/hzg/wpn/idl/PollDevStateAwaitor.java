@@ -30,6 +30,7 @@
 package hzg.wpn.idl;
 
 
+import fr.esrf.Tango.DevState;
 import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.proxy.NoSuchAttributeException;
 import org.tango.client.ez.proxy.TangoProxy;
@@ -43,7 +44,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
     public static final long SLEEP_GRANULARITY = 100L;
 
     @Override
-    public void waitUntil(EnumDevState targetState) {
+    public void waitUntil(DevState targetState) {
         while (true) {
             try {
                 pollCrtState();
@@ -64,7 +65,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
         }
     }
 
-    public void waitUntilNot(EnumDevState targetState) {
+    public void waitUntilNot(DevState targetState) {
         while (true) {
             try {
                 pollCrtState();

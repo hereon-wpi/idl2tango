@@ -29,6 +29,7 @@
 
 package hzg.wpn.idl;
 
+import fr.esrf.Tango.DevState;
 import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.proxy.*;
 
@@ -47,7 +48,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     @Override
-    public void waitUntil(EnumDevState targetState) {
+    public void waitUntil(DevState targetState) {
         try {
             EnumDevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);
@@ -70,7 +71,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     @Override
-    public void waitUntilNot(EnumDevState targetState) {
+    public void waitUntilNot(DevState targetState) {
         try {
             EnumDevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);

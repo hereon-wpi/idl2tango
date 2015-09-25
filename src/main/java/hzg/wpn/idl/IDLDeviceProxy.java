@@ -30,15 +30,8 @@
 package hzg.wpn.idl;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.FileAppender;
-import fr.esrf.Tango.DevFailed;
-import fr.esrf.Tango.DevSource;
+import fr.esrf.Tango.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.data.type.TangoImage;
 import org.tango.client.ez.proxy.TangoProxies;
 import org.tango.client.ez.proxy.TangoProxy;
@@ -47,6 +40,8 @@ import org.tango.client.ez.util.TangoUtils;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -64,6 +59,25 @@ public class IDLDeviceProxy {
     final TangoProxy proxy;
     final TangoDevStateAwaitor awaitor;
     final AtomicReference<Exception> lastException = new AtomicReference<Exception>(new Exception("No exceptions so far."));
+
+    private final static Map<String, DevState> devStates = new HashMap<String, DevState>();
+
+    static {
+        devStates.put("ON", DevState.ON);
+        devStates.put("OFF", DevState.OFF);
+        devStates.put("CLOSE", DevState.CLOSE);
+        devStates.put("OPEN", DevState.OPEN);
+        devStates.put("INSERT", DevState.INSERT);
+        devStates.put("EXTRACT", DevState.EXTRACT);
+        devStates.put("MOVING", DevState.MOVING);
+        devStates.put("STANDBY", DevState.STANDBY);
+        devStates.put("FAULT", DevState.FAULT);
+        devStates.put("INIT", DevState.INIT);
+        devStates.put("RUNNING", DevState.RUNNING);
+        devStates.put("ALARM", DevState.ALARM);
+        devStates.put("DISABLE", DevState.DISABLE);
+        devStates.put("UNKNOWN", DevState.UNKNOWN);
+    }
 
     /**
      * Changes current log output file to the specified one
@@ -189,7 +203,7 @@ public class IDLDeviceProxy {
     public void waitUntil(String state) {
         logger.trace("Waiting until {}/{}", proxy.getName(), state);
         try {
-            EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
+            DevState targetDevState = devStates.get(state.toUpperCase());
             awaitor.waitUntil(targetDevState);
             logger.trace("Done waiting.");
         } catch (Exception e) {
@@ -214,7 +228,7 @@ public class IDLDeviceProxy {
     public void waitUntilNot(String state) {
         logger.trace("Waiting until not {}/{}", proxy.getName(), state);
         try {
-            EnumDevState targetDevState = EnumDevState.valueOf(state.toUpperCase());
+            DevState targetDevState = devStates.get(state.toUpperCase());
             awaitor.waitUntilNot(targetDevState);
             logger.trace("Done waiting.");
         } catch (Exception e) {
@@ -730,7 +744,7 @@ public class IDLDeviceProxy {
     public String readAttributeState() {
         logger.trace("Reading {}/State", proxy.getName());
         try {
-            return ((EnumDevState) proxy.readAttribute("State")).name();
+            return ((DevState) proxy.readAttribute("State")).toString();
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);

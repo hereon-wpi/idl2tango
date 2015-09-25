@@ -30,7 +30,7 @@
 package hzg.wpn.idl;
 
 
-import org.tango.client.ez.data.EnumDevState;
+import fr.esrf.Tango.DevState;
 import org.tango.client.ez.proxy.TangoProxy;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,7 +43,7 @@ public abstract class TangoDevStateAwaitor {
     public static final String STATE = "State";
     private final TangoProxy proxy;
     private final TangoProxyExceptionHandler handler;
-    private final AtomicReference<EnumDevState> crtDevState = new AtomicReference<EnumDevState>();
+    private final AtomicReference<DevState> crtDevState = new AtomicReference<DevState>();
 
     protected TangoDevStateAwaitor(TangoProxy proxy, TangoProxyExceptionHandler handler) {
         this.proxy = proxy;
@@ -56,7 +56,7 @@ public abstract class TangoDevStateAwaitor {
      * @param targetState wait until the state
      * @throws RuntimeException
      */
-    public abstract void waitUntil(EnumDevState targetState);
+    public abstract void waitUntil(DevState targetState);
 
     /**
      * Blocks current thread until the device is in targetState
@@ -64,13 +64,13 @@ public abstract class TangoDevStateAwaitor {
      * @param targetState current device state
      * @throws RuntimeException
      */
-    public abstract void waitUntilNot(EnumDevState targetState);
+    public abstract void waitUntilNot(DevState targetState);
 
-    protected boolean targetStateReached(EnumDevState targetState) {
+    protected boolean targetStateReached(DevState targetState) {
         return crtDevState.get() == targetState;
     }
 
-    protected void setCrtDevState(EnumDevState state) {
+    protected void setCrtDevState(DevState state) {
         this.crtDevState.set(state);
     }
 
