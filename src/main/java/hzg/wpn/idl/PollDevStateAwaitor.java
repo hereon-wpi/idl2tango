@@ -31,7 +31,6 @@ package hzg.wpn.idl;
 
 
 import fr.esrf.Tango.DevState;
-import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.proxy.NoSuchAttributeException;
 import org.tango.client.ez.proxy.TangoProxy;
 import org.tango.client.ez.proxy.TangoProxyException;
@@ -87,7 +86,7 @@ public class PollDevStateAwaitor extends TangoDevStateAwaitor {
     }
 
     private void pollCrtState() throws TangoProxyException, NoSuchAttributeException {
-        EnumDevState crtState = getProxy().readAttribute(STATE);
+        DevState crtState = getProxy().readAttribute(STATE);
         setCrtDevState(crtState);
     }
 

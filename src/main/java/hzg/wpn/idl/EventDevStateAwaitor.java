@@ -30,7 +30,6 @@
 package hzg.wpn.idl;
 
 import fr.esrf.Tango.DevState;
-import org.tango.client.ez.data.EnumDevState;
 import org.tango.client.ez.proxy.*;
 
 /**
@@ -41,7 +40,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
 
     private final Object internalLock = new Object();
     private volatile Throwable error = null;
-    private volatile TangoEventListener<EnumDevState> listener;
+    private volatile TangoEventListener<DevState> listener;
 
     public EventDevStateAwaitor(TangoProxy proxy, TangoProxyExceptionHandler handler) {
         super(proxy, handler);
@@ -50,7 +49,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     @Override
     public void waitUntil(DevState targetState) {
         try {
-            EnumDevState crtState = getProxy().readAttribute(STATE);
+            DevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);
 
             subscribeToStateChange();
@@ -73,7 +72,7 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     @Override
     public void waitUntilNot(DevState targetState) {
         try {
-            EnumDevState crtState = getProxy().readAttribute(STATE);
+            DevState crtState = getProxy().readAttribute(STATE);
             setCrtDevState(crtState);
 
             subscribeToStateChange();
@@ -96,10 +95,10 @@ public class EventDevStateAwaitor extends TangoDevStateAwaitor {
     private void subscribeToStateChange() throws TangoProxyException, NoSuchAttributeException {
         final Thread mainThread = Thread.currentThread();
         getProxy().subscribeToEvent(STATE, TangoEvent.CHANGE);
-        getProxy().addEventListener(STATE, TangoEvent.CHANGE, listener = new TangoEventListener<EnumDevState>() {
+        getProxy().addEventListener(STATE, TangoEvent.CHANGE, listener = new TangoEventListener<DevState>() {
             @Override
-            public void onEvent(EventData<EnumDevState> eventData) {
-                EnumDevState crtState = eventData.getValue();
+            public void onEvent(EventData<DevState> eventData) {
+                DevState crtState = eventData.getValue();
                 if (crtState == null) return;
                 synchronized (internalLock) {
                     setCrtDevState(crtState);
