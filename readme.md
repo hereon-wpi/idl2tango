@@ -43,7 +43,7 @@ joDeviceProxy->setLogLevel, "trace"
 
 available log levels are: ERROR, INFO, DEBUG, TRACE
 
-2) New error message in IDL's console:
+2) New error message design in IDL's console:
 
 ```
 % ProxyException in sys/tg_test/1
