@@ -32,7 +32,7 @@ One can set output file using:
 joDeviceProxy->setLogFile, "D:\Projects\hzg.wpn.projects\idl2tango\target\log"
 ```
 
-where joDeviceProxy is any IDLDeviceProxy
+where joDeviceProxy is an any IDLDeviceProxy
 
 or set log level:
 
