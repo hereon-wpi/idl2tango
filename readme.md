@@ -1,12 +1,12 @@
-= Welcome =
+# Welcome
 
 The latest version is 1.1.2 and can be downloaded from [here](https://bintray.com/artifact/download/hzgde/hzg-wpn-projects/hzg/wpn/xenv/IDL2TangoJavaClient/1.1.2/IDL2TangoJavaClient-1.1.2.jar)
 
 [JavaDoc](http://hzgwpn.bitbucket.org/idl2java)
 
-= Release notes =
+# Release notes 
 
-== 1.1.2 ==
+## 1.1.2
 
 1) An external logging is added: idl2tango.log file is created in %user.home% or in %XENV_ROOT%/var/log/idl
 
