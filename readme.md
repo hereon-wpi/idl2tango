@@ -11,6 +11,7 @@ The latest version is 1.1.2 and can be downloaded from [here](https://bintray.co
 1) An external logging is added: idl2tango.log file is created in %user.home% or in %XENV_ROOT%/var/log/idl
 
 Log looks like the following:
+
 ```
 DEBUG 28-09-2015 12:48:15 [IDL - h.w.i.IDLDeviceProxy] Creating proxy for device [tango://hzgpp07ct1:10000/p07/dfa/status_server_beam_current,useEventsForWaitUntil=false]
 TRACE 28-09-2015 12:48:15 [IDL - h.w.i.IDLDeviceProxy] Set p07/dfa/status_server_beam_current/timeout=10000
@@ -26,7 +27,8 @@ TRACE 28-09-2015 13:01:17 [IDL - h.w.i.IDLDeviceProxy] Reading p07ct/attocubes/a
 
 One can set output file using:
 
-```#!idl
+```
+#!idl
 joDeviceProxy->setLogFile, "D:\Projects\hzg.wpn.projects\idl2tango\target\log"
 ```
 
@@ -34,7 +36,8 @@ where joDeviceProxy is any IDLDeviceProxy
 
 or set log level:
 
-```#!idl
+```
+#!idl
 joDeviceProxy->setLogLevel, "trace"
 ```
 
