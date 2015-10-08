@@ -345,7 +345,7 @@ public class IDLDeviceProxyTest {
         IDLDeviceProxy proxy1 = new IDLDeviceProxy("tango://hzgharwi3:10000/development/1.0.1-SNAPSHOT/0");
         proxy1.setSource(0);
         proxy1.executeCommand("Status");
-        proxy1.writeAttribute("encode", true);
+        proxy1.writeAttributeBoolean("encode", (short)1);
 
         IDLDeviceProxy proxy2 = new IDLDeviceProxy("tango://hzgharwi3:10000/development/1.0.1-SNAPSHOT/0");
         proxy2.setSource(0);
