@@ -13,6 +13,10 @@ pro TangoTestIDLClient
   print, joDeviceProxy->getTangoVersion()
 
   joDeviceProxy->waitUntil, "RUNNING"
+  
+  ;joDeviceProxy->writeAttribute, "double_scalar_w", 3.14
+  ;joDeviceProxy->writeAttribute, "ushort_scalar", 3.14
+  joDeviceProxy->writeAttribute, "ushort_scalar", 321.123
 
   ;IF (OBJ_CLASS(joStr) NE "IDLJAVAOBJECT$JAVA_LANG_STRING") THEN BEGIN
   ;  PRINT, '(ERR) creating java.lang.String.  joStr =', joStr
@@ -22,29 +26,29 @@ pro TangoTestIDLClient
   ;PRINT, joClientFactory->createClient("sys/tg_test/1")
   ;joObject = joDeviceProxy->readAttribute("throw_exception")
   
-  
-  print, joDeviceProxy->readAttributeDouble("double_scalar")
+  ;print, joDeviceProxy->readAttributeState() eq "RUNNING"
+  ;print, joDeviceProxy->readAttributeDouble("double_scalar")
   
   ;joDeviceProxy->setLogLevel, "error"
   
   
-  print, joDeviceProxy->readAttributeInteger("long_scalar")
+  ;print, joDeviceProxy->readAttributeInteger("long_scalar")
   
-  joDeviceProxy->readAttribute, "throw_exception"
+  ;joDeviceProxy->readAttribute, "throw_exception"
   
-  joObject = joDeviceProxy->readAttribute("ushort_image_ro")
+  ;joObject = joDeviceProxy->readAttribute("ushort_image_ro")
   
   ;joImage = joObject->toRenderedImage_sRGB()
   
-  im = IMAGE(joObject->getData(), joobject->getWidth(), joobject->getHeight())
+  ;im = IMAGE(joObject->getData(), joobject->getWidth(), joobject->getHeight())
   
      
-  joDeviceProxy->writeTangoImageAsJPEG, "D:\Projects\hzg.wpn.projects\idl2tango\target\ushort_image_ro.jpeg", joObject
+  ;joDeviceProxy->writeTangoImageAsJPEG, "D:\Projects\hzg.wpn.projects\idl2tango\target\ushort_image_ro.jpeg", joObject
   
-  PRINT, joObject.toString()
+  ;PRINT, joObject.toString()
   
   ; delete the object
-  OBJ_DESTROY, joObject
+  ;OBJ_DESTROY, joObject
   OBJ_DESTROY, joDeviceProxy
   
 end
