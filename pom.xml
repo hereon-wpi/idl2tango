@@ -33,7 +33,7 @@
 
     <groupId>hzg.wpn.xenv</groupId>
     <artifactId>IDL2TangoJavaClient</artifactId>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>1.1.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <developers>
@@ -91,6 +91,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
         </dependency>
     </dependencies>
 
