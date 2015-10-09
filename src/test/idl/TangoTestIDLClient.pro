@@ -7,16 +7,17 @@ pro TangoTestIDLClient
   joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy","tango://hzgcttest:10000/sys/tg_test/1")
   
   joDeviceProxy->setLogFile, "D:\Projects\hzg.wpn.projects\idl2tango\target\log"
-  joDeviceProxy->setLogLevel, "trace"
+  joDeviceProxy->setLogLevel, "TRACE"
   
   print, joDeviceProxy->getVersion()
   print, joDeviceProxy->getTangoVersion()
 
   joDeviceProxy->waitUntil, "RUNNING"
   
-  ;joDeviceProxy->writeAttribute, "double_scalar_w", 3.14
-  ;joDeviceProxy->writeAttribute, "ushort_scalar", 3.14
+  joDeviceProxy->writeAttribute, "double_scalar_w", 3.14
+  joDeviceProxy->writeAttribute, "float_scalar", 3.14  
   joDeviceProxy->writeAttribute, "ulong_scalar", 123
+  joDeviceProxy->writeAttribute, "float_scalar", 3.14D
 
   ;IF (OBJ_CLASS(joStr) NE "IDLJAVAOBJECT$JAVA_LANG_STRING") THEN BEGIN
   ;  PRINT, '(ERR) creating java.lang.String.  joStr =', joStr

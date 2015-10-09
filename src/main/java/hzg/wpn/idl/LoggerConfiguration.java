@@ -1,10 +1,13 @@
 package hzg.wpn.idl;
 
+import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
+import ch.qos.logback.core.spi.AppenderAttachable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,22 +50,22 @@ public class LoggerConfiguration {
         lc.getLogger("net.sf.ehcache").setLevel(Level.ERROR);
         lc.getLogger("hzg.wpn.idl").setLevel(Level.TRACE);
 
+        //asynchronous appender
+        AsyncAppender asyncAppender = new AsyncAppender();
+        asyncAppender.setName("async");
+        //do not discard any events
+        asyncAppender.setDiscardingThreshold(0);
+        asyncAppender.setContext(lc);
+        asyncAppender.addAppender(fileAppender);
+        asyncAppender.start();
+
         //setup root logger
         ch.qos.logback.classic.Logger root = lc.getLogger("root");
-        root.addAppender(fileAppender);
+        root.addAppender(asyncAppender);
         root.setLevel(Level.DEBUG);
 
-        //disable console output
+        //disable console output because it pollutes IDL's console
         root.detachAppender("console");
-//        Appender<ILoggingEvent> consoleAppender = root.getAppender("console");
-//
-//        consoleAppender.stop();
-//        LevelFilter levelFilter = new LevelFilter();
-//        levelFilter.setLevel(Level.ERROR);
-//        levelFilter.setOnMatch(FilterReply.ACCEPT);
-//        levelFilter.setOnMismatch(FilterReply.DENY);
-//        consoleAppender.addFilter(levelFilter);
-//        consoleAppender.start();
 
         return LoggerFactory.getLogger(clazz);
     }
@@ -72,9 +75,10 @@ public class LoggerConfiguration {
 
         ch.qos.logback.classic.Logger root = lc.getLogger("root");
 
-        FileAppender<?> fileAppender = (FileAppender<?>)
-                root.getAppender("file");
+        Appender<?> async = root.getAppender("async");
 
+        FileAppender<?> fileAppender = (FileAppender<?>)
+                ((AppenderAttachable)async).getAppender("file");
 
         fileAppender.setFile(file);
         fileAppender.start();
