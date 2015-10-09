@@ -14,8 +14,7 @@ The latest version is 1.1.4 and can be downloaded from [here](https://bintray.co
 joDeviceProxy->writeAttribute, "double_scalar_w", 3.14 ;pass: IDL float automatically converts to Java double
 joDeviceProxy->writeAttribute, "float_scalar", 3.14    ;pass: no conversion required
 joDeviceProxy->writeAttribute, "ulong_scalar", 123     ;pass: IDL int automatically converts to Java long
-joDeviceProxy->writeAttribute, "float_scalar", 3.14D   ;fails: Java double -> Java float conversion forbidden
-                                                                     (possible loss in precision)
+joDeviceProxy->writeAttribute, "float_scalar", 3.14D   ;pass: possible loss in precision - double -> float
 ```
 
 2) New writeAttributeXXX methods:
