@@ -1623,9 +1623,36 @@ public class IDLDeviceProxy {
         }
     }
 
+    /**
+     * <pre>
+     *     Code-Version: XXX;
+     *     Loaded from LOCATION
+     * </pre>
+     *
+     * @return current version
+     */
     public static String getVersion() {
-        return String.format("Code-Version: %s; Loaded from %s",
+        return String.format("Code-Version: %s;\nLoaded from %s",
                 IDLDeviceProxy.class.getPackage().getImplementationVersion(),
                 IDLDeviceProxy.class.getProtectionDomain().getCodeSource().getLocation().toString());
+    }
+
+    /**
+     * Prints current version
+     */
+    public static void printVersion(){
+        System.out.println();
+        System.out.println("\n" +
+                "\n" +
+                "'####:'########::'##::::::::'#######::'########::::'###::::'##::: ##::'######::::'#######::\n" +
+                ". ##:: ##.... ##: ##:::::::'##.... ##:... ##..::::'## ##::: ###:: ##:'##... ##::'##.... ##:\n" +
+                ": ##:: ##:::: ##: ##:::::::..::::: ##:::: ##:::::'##:. ##:: ####: ##: ##:::..::: ##:::: ##:\n" +
+                ": ##:: ##:::: ##: ##::::::::'#######::::: ##::::'##:::. ##: ## ## ##: ##::'####: ##:::: ##:\n" +
+                ": ##:: ##:::: ##: ##:::::::'##::::::::::: ##:::: #########: ##. ####: ##::: ##:: ##:::: ##:\n" +
+                ": ##:: ##:::: ##: ##::::::: ##::::::::::: ##:::: ##.... ##: ##:. ###: ##::: ##:: ##:::: ##:\n" +
+                "'####: ########:: ########: #########:::: ##:::: ##:::: ##: ##::. ##:. ######:::. #######::\n" +
+                "....::........:::........::.........:::::..:::::..:::::..::..::::..:::......:::::.......:::\n" +
+                "\n");
+        System.out.println(getVersion());
     }
 }

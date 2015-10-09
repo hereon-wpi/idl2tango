@@ -6,6 +6,53 @@ The latest version is 1.1.2 and can be downloaded from [here](https://bintray.co
 
 # Release notes 
 
+## 1.1.4
+
+1) writeAttribute is now much more clever:
+
+```
+joDeviceProxy->writeAttribute, "double_scalar_w", 3.14 ;pass: IDL float automatically converts to Java double
+joDeviceProxy->writeAttribute, "float_scalar", 3.14    ;pass: no conversion required
+joDeviceProxy->writeAttribute, "ulong_scalar", 123     ;pass: IDL int automatically converts to Java long
+joDeviceProxy->writeAttribute, "float_scalar", 3.14D   ;fails: Java double -> Java float conversion forbidden
+                                                                     (possible loss in precision)
+```
+
+2) New writeAttributeXXX methods:
+
+```
+writeAttributeBoolean, 'boolean_scalar', 1 ;writes true
+writeAttributeShort, 'short_scalar', 123
+writeAttributeUShort, 'ushort_scalar', 123
+writeAttributeLong, 'long_scalar', 123456L
+writeAttributeULong, 'ulong_scalar', 123456L
+writeAttributeLong64, 'long64_scalar', LONG64(12345678)
+writeAttributeULong64, 'ulong64_scalar', LONG64(12345678)
+writeAttributeFloat, 'float_scalar', 3.14
+writeAttributeDouble, 'double_scalar', 3.14D
+```
+
+3) getVersion works!:
+
+```
+print, joDeviceProxy->getVersion()
+```
+gives
+```
+Code-Version: 1.1.4-SNAPSHOT;
+Loaded from file://localhostD:/Projects/hzg.wpn.projects/idl2tango/target/IDL2TangoJavaClient-1.1.4-SNAPSHOT.jar
+```
+
+OR
+
+```
+joDeviceProxy->printVersion
+```
+
+this one directly prints version into the console
+
+4) External log is now written asynchronously
+
 ## 1.1.2
 
 1) An external logging is added: idl2tango.log file is created in %user.home% or in %XENV_ROOT%/var/log/idl

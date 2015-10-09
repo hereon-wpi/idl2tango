@@ -9,10 +9,14 @@ pro TangoTestIDLClient
   joDeviceProxy->setLogFile, "D:\Projects\hzg.wpn.projects\idl2tango\target\log"
   joDeviceProxy->setLogLevel, "TRACE"
   
+  joDeviceProxy->printVersion
+  
   print, joDeviceProxy->getVersion()
   print, joDeviceProxy->getTangoVersion()
 
   joDeviceProxy->waitUntil, "RUNNING"
+  
+  joDeviceProxy->writeAttributeBoolean, "boolean_scalar", 1
   
   joDeviceProxy->writeAttribute, "double_scalar_w", 3.14
   joDeviceProxy->writeAttribute, "float_scalar", 3.14  
