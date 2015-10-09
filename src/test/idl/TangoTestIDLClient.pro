@@ -16,7 +16,7 @@ pro TangoTestIDLClient
   
   ;joDeviceProxy->writeAttribute, "double_scalar_w", 3.14
   ;joDeviceProxy->writeAttribute, "ushort_scalar", 3.14
-  joDeviceProxy->writeAttribute, "ushort_scalar", 321.123
+  joDeviceProxy->writeAttribute, "ulong_scalar", 123
 
   ;IF (OBJ_CLASS(joStr) NE "IDLJAVAOBJECT$JAVA_LANG_STRING") THEN BEGIN
   ;  PRINT, '(ERR) creating java.lang.String.  joStr =', joStr

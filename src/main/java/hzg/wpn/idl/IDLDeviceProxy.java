@@ -31,7 +31,6 @@ package hzg.wpn.idl;
 
 import ch.qos.logback.classic.Level;
 import fr.esrf.Tango.*;
-import org.apache.commons.beanutils.ConvertUtils;
 import org.slf4j.Logger;
 import org.tango.client.ez.data.type.TangoImage;
 import org.tango.client.ez.proxy.TangoAttributeInfoWrapper;
@@ -844,7 +843,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeShort(String name, short value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing short attribute {}/{}={}", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -867,7 +866,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeUShort(String name, short value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing ushort attribute {}/{}={}", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, (int)value);
         } catch (Exception e) {
@@ -890,7 +889,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeLong(String name, int value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing long attribute {}/{}={}", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -913,7 +912,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeULong(String name, int value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing ulong attribute {}/{}={}", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, (long)value);
         } catch (Exception e) {
@@ -936,7 +935,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeLong64(String name, long value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing long64 attribute {}/{}={}", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -959,7 +958,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeULong64(String name, long value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing ulong64 attribute {}/{}={}", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -977,7 +976,6 @@ public class IDLDeviceProxy {
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", BYTE(1)
      * </code>
-     * <red>ACHTUNG! This method performs silent conversion of the value to the type of Tango attribute</red>
      *
      * @param name  an attribute name
      * @param value a value
@@ -987,9 +985,18 @@ public class IDLDeviceProxy {
         logger.trace("Writing byte attribute {}/{}={}", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
-            Object converted = ConvertUtils.convert(value, info.getClazz());
-            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getClazz().getSimpleName());
-            proxy.writeAttribute(name, converted);
+            if(info.getClazz() == Byte.TYPE){
+                proxy.writeAttribute(name, value);
+            } else if(info.getClazz() == Short.TYPE){
+                proxy.writeAttribute(name, Short.valueOf(value));
+            } else if(info.getClazz() == Integer.TYPE){
+                proxy.writeAttribute(name, Integer.valueOf(value));
+            } else if(info.getClazz() == Long.TYPE){
+                proxy.writeAttribute(name, Long.valueOf(value));
+            } else {
+                throw new IllegalArgumentException(
+                        "Can not write byte into attribute of type[=" + info.getClazz().getSimpleName() + "]");
+            }
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1004,7 +1011,6 @@ public class IDLDeviceProxy {
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LONG64(1)
      * </code>
-     * <red>ACHTUNG! This method performs silent conversion of the value to the type of Tango attribute</red>
      *
      * @param name  an attribute name
      * @param value a value
@@ -1013,10 +1019,7 @@ public class IDLDeviceProxy {
     public void writeAttribute(String name, long value) {
         logger.trace("Writing long attribute {}/{}={}", proxy.getName(), name, value);
         try {
-            TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
-            Object converted = ConvertUtils.convert(value, info.getClazz());
-            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getClazz().getSimpleName());
-            proxy.writeAttribute(name, converted);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1031,7 +1034,6 @@ public class IDLDeviceProxy {
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", 0.125D
      * </code>
-     * <red>ACHTUNG! This method performs silent conversion of the value to the type of Tango attribute</red>
      *
      * @param name  an attribute name
      * @param value a value
@@ -1040,10 +1042,7 @@ public class IDLDeviceProxy {
     public void writeAttribute(String name, double value) {
         logger.trace("Writing double attribute {}/{}={}", proxy.getName(), name, value);
         try {
-            TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
-            Object converted = ConvertUtils.convert(value, info.getClazz());
-            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getClazz().getSimpleName());
-            proxy.writeAttribute(name, converted);
+            proxy.writeAttribute(name, value);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1058,7 +1057,6 @@ public class IDLDeviceProxy {
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", 1234
      * </code>
-     * <red>ACHTUNG! This method performs silent conversion of the value to the type of Tango attribute</red>
      *
      * @param name  an attribute name
      * @param value a value
@@ -1068,9 +1066,16 @@ public class IDLDeviceProxy {
         logger.trace("Writing short attribute {}/{}={}", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
-            Object converted = ConvertUtils.convert(value, info.getClazz());
-            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getClazz().getSimpleName());
-            proxy.writeAttribute(name, converted);
+            if(info.getClazz() == Short.TYPE){
+                proxy.writeAttribute(name, value);
+            } else if(info.getClazz() == Integer.TYPE){
+                proxy.writeAttribute(name, Integer.valueOf(value));
+            } else if(info.getClazz() == Long.TYPE){
+                proxy.writeAttribute(name, Long.valueOf(value));
+            } else {
+                throw new IllegalArgumentException(
+                        "Can not write short into attribute of type[=" + info.getClazz().getSimpleName() + "]");
+            }
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1108,7 +1113,6 @@ public class IDLDeviceProxy {
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", 0.125
      * </code>
-     * <red>ACHTUNG! This method performs silent conversion of the value to the type of Tango attribute</red>
      *
      * @param name  an attribute name
      * @param value a value
@@ -1118,9 +1122,14 @@ public class IDLDeviceProxy {
         logger.trace("Writing float attribute {}/{}={}", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
-            Object converted = ConvertUtils.convert(value, info.getClazz());
-            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getClazz().getSimpleName());
-            proxy.writeAttribute(name, converted);
+            if(info.getClazz() == Float.TYPE){
+                proxy.writeAttribute(name,value);
+            } else if(info.getClazz() == Double.TYPE){
+                proxy.writeAttribute(name, Double.valueOf(value));
+            } else {
+                throw new IllegalArgumentException(
+                        "Can not write float into attribute of type[=" + info.getClazz().getSimpleName() + "]");
+            }
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -1135,7 +1144,6 @@ public class IDLDeviceProxy {
      * <code>
      * joDeviceProxy->writeAttribute, "SomeAttribute", LONG(0.125)
      * </code>
-     * <red>ACHTUNG! This method performs silent conversion of the value to the type of Tango attribute</red>
      *
      * @param name  an attribute name
      * @param value a value
@@ -1145,9 +1153,14 @@ public class IDLDeviceProxy {
         logger.trace("Writing int attribute {}/{}={}", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
-            Object converted = ConvertUtils.convert(value, info.getClazz());
-            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getClazz().getSimpleName());
-            proxy.writeAttribute(name, converted);
+            if(info.getClazz() == Integer.TYPE){
+                proxy.writeAttribute(name,value);
+            } else if(info.getClazz() == Long.TYPE){
+                proxy.writeAttribute(name, Long.valueOf(value));
+            } else {
+                throw new IllegalArgumentException(
+                        "Can not write int into attribute of type[=" + info.getClazz().getSimpleName() + "]");
+            }
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
