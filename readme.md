@@ -51,7 +51,7 @@ joDeviceProxy->printVersion
 
 this one directly prints version into the console
 
-4) External log is now written asynchronously
+4) External log is now recorded asynchronously
 
 ## 1.1.2
 
