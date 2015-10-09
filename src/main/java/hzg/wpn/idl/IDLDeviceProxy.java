@@ -820,7 +820,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeBoolean(String name, short value) {
-        logger.trace("Writing boolean attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={}[passed {}] (boolean)", proxy.getName(), name, value > 0,  value);
         try {
             proxy.writeAttribute(name, value > 0);
         } catch (Exception e) {
@@ -843,7 +843,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeShort(String name, short value) {
-        logger.trace("Writing short attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (short)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -866,7 +866,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeUShort(String name, short value) {
-        logger.trace("Writing ushort attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (ushort)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, (int)value);
         } catch (Exception e) {
@@ -889,7 +889,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeLong(String name, int value) {
-        logger.trace("Writing long attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (long)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -912,7 +912,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeULong(String name, int value) {
-        logger.trace("Writing ulong attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (ulong)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, (long)value);
         } catch (Exception e) {
@@ -935,7 +935,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeLong64(String name, long value) {
-        logger.trace("Writing long64 attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (long64)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -958,7 +958,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttributeULong64(String name, long value) {
-        logger.trace("Writing ulong64 attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (ulong64)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -982,7 +982,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, byte value) {
-        logger.trace("Writing byte attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (byte)", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
             if(info.getClazz() == Byte.TYPE){
@@ -1017,7 +1017,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, long value) {
-        logger.trace("Writing long attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (long)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1040,7 +1040,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, double value) {
-        logger.trace("Writing double attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (double)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1063,7 +1063,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, short value) {
-        logger.trace("Writing short attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (short)", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
             if(info.getClazz() == Short.TYPE){
@@ -1096,7 +1096,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, String value) {
-        logger.trace("Writing String attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (String)", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1119,7 +1119,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, float value) {
-        logger.trace("Writing float attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (float)", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
             if(info.getClazz() == Float.TYPE){
@@ -1150,7 +1150,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, int value) {
-        logger.trace("Writing int attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (int)", proxy.getName(), name, value);
         try {
             TangoAttributeInfoWrapper info = proxy.getAttributeInfo(name);
             if(info.getClazz() == Integer.TYPE){
@@ -1181,7 +1181,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, double[] value) {
-        logger.trace("Writing double[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (double[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1204,7 +1204,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, boolean[] value) {
-        logger.trace("Writing boolean[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (boolean[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1227,7 +1227,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, int[] value) {
-        logger.trace("Writing int[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (int[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1250,7 +1250,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, short[][] value) {
-        logger.trace("Writing short[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (short[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1273,7 +1273,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, int[][] value) {
-        logger.trace("Writing int[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (int[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1298,7 +1298,7 @@ public class IDLDeviceProxy {
      * @throws java.lang.RuntimeException
      */
     public void writeAttribute(String attrName, int[] data, int width, int height){
-        logger.trace("Writing an int image {}/{}[{}x{}]", proxy.getName(), attrName, width, height);
+        logger.trace("Writing an image {}/{}[{}x{}] (int)", proxy.getName(), attrName, width, height);
         try {
             TangoImage<int[]> value = new TangoImage<int[]>(data, width, height);
             proxy.writeAttribute(attrName, value);
@@ -1324,7 +1324,7 @@ public class IDLDeviceProxy {
      * @throws java.lang.RuntimeException
      */
     public void writeAttribute(String attrName, double[] data, int width, int height){
-        logger.trace("Writing a double image {}/{}[{}x{}]", proxy.getName(), attrName, width, height);
+        logger.trace("Writing an image {}/{}[{}x{}] (double)", proxy.getName(), attrName, width, height);
         try {
             TangoImage<double[]> value = new TangoImage<double[]>(data, width, height);
             proxy.writeAttribute(attrName, value);
@@ -1350,7 +1350,7 @@ public class IDLDeviceProxy {
      * @throws java.lang.RuntimeException
      */
     public void writeAttribute(String attrName, float[] data, int width, int height){
-        logger.trace("Writing a float image {}/{}[{}x{}]", proxy.getName(), attrName, width, height);
+        logger.trace("Writing an image {}/{}[{}x{}] (float)", proxy.getName(), attrName, width, height);
         try {
             TangoImage<float[]> value = new TangoImage<float[]>(data, width, height);
             proxy.writeAttribute(attrName, value);
@@ -1374,7 +1374,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, String[] value) {
-        logger.trace("Writing String[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (String[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1397,7 +1397,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, long[] value) {
-        logger.trace("Writing long[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (long[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1420,7 +1420,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, float[][] value) {
-        logger.trace("Writing float[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (float[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1443,7 +1443,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, byte[][] value) {
-        logger.trace("Writing byte[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (byte[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1466,7 +1466,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, short[] value) {
-        logger.trace("Writing short[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (short[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1489,7 +1489,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, boolean[][] value) {
-        logger.trace("Writing boolean[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (boolean[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1512,7 +1512,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, byte[] value) {
-        logger.trace("Writing byte[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (byte[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1535,7 +1535,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, String[][] value) {
-        logger.trace("Writing String[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (String[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1558,7 +1558,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, long[][] value) {
-        logger.trace("Writing long[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (long[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1581,7 +1581,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, double[][] value) {
-        logger.trace("Writing double[][] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (double[][])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1604,7 +1604,7 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public void writeAttribute(String name, float[] value) {
-        logger.trace("Writing float[] attribute {}/{}={}", proxy.getName(), name, value);
+        logger.trace("Writing attribute {}/{}={} (float[])", proxy.getName(), name, value);
         try {
             proxy.writeAttribute(name, value);
         } catch (Exception e) {
@@ -1623,7 +1623,9 @@ public class IDLDeviceProxy {
         }
     }
 
-    public String getVersion() {
-        return getClass().getPackage().getImplementationVersion();
+    public static String getVersion() {
+        return String.format("Code-Version: %s; Loaded from %s",
+                IDLDeviceProxy.class.getPackage().getImplementationVersion(),
+                IDLDeviceProxy.class.getProtectionDomain().getCodeSource().getLocation().toString());
     }
 }
