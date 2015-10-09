@@ -39,8 +39,8 @@ print, joDeviceProxy->getVersion()
 ```
 gives
 ```
-Code-Version: 1.1.4-SNAPSHOT;
-Loaded from file://localhostD:/Projects/hzg.wpn.projects/idl2tango/target/IDL2TangoJavaClient-1.1.4-SNAPSHOT.jar
+Code-Version: 1.1.4;
+Loaded from file://localhostD:/Projects/hzg.wpn.projects/idl2tango/target/IDL2TangoJavaClient-1.1.4.jar
 ```
 
 OR
