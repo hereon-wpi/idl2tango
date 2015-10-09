@@ -49,7 +49,7 @@ OR
 joDeviceProxy->printVersion
 ```
 
-this one directly prints version into the console
+this one directly prints version into the console. Give it a try ;)
 
 4) External log is now recorded asynchronously
 
