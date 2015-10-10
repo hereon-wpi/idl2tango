@@ -28,7 +28,7 @@
 # Allow IDL-Java bridge to use .class files located in my CLASSPATH and also the
 # classes found in the examples .jar file shipped with the bridge
 
-JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2TangoJavaClient-1.1.4-SNAPSHOT.jar
+JVM Classpath = $CLASSPATH;D:\Projects\hzg.wpn.projects\idl2tango\target\IDL2TangoJavaClient-1.1.5-SNAPSHOT.jar
 
 
 
