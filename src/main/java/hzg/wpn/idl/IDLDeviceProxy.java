@@ -81,6 +81,11 @@ public class IDLDeviceProxy {
         devStates.put("UNKNOWN", DevState.UNKNOWN);
     }
 
+    static {
+        // :)
+        printVersion();
+    }
+
     /**
      * Changes current log output file to the specified one
      *

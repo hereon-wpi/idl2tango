@@ -9,8 +9,6 @@ pro TangoTestIDLClient
   joDeviceProxy->setLogFile, "D:\Projects\hzg.wpn.projects\idl2tango\target\log"
   joDeviceProxy->setLogLevel, "TRACE"
   
-  joDeviceProxy->printVersion
-  
   print, joDeviceProxy->getVersion()
   print, joDeviceProxy->getTangoVersion()
 
