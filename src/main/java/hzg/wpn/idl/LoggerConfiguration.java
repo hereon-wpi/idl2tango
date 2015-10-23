@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
  * @since 17.09.2015
  */
 public class LoggerConfiguration {
+
+    public static final String DEFAULT_LOG_FILE = (System.getenv("XENV_ROOT") != null ?
+            System.getenv("XENV_ROOT") : System.getProperty("user.home")) + "/idl2tango.log";
+
     private LoggerConfiguration(){}
 
     public static Logger createLogger(Class<?> clazz){
@@ -31,8 +35,7 @@ public class LoggerConfiguration {
         //start new file each run
         fileAppender.setAppend(false);
 
-        fileAppender.setFile((System.getenv("XENV_ROOT") != null ?
-                System.getenv("XENV_ROOT") : System.getProperty("user.home"))  + "/idl2tango.log");
+        fileAppender.setFile(DEFAULT_LOG_FILE);
 
         PatternLayout pl = new PatternLayout();
         pl.setPattern("%p %d{dd-MM-yyyy HH:mm:ss,SSS} [%t - %C{1}] %m%n");

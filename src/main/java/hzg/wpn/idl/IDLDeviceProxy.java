@@ -34,10 +34,7 @@ import fr.esrf.Tango.*;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.slf4j.Logger;
 import org.tango.client.ez.data.type.TangoImage;
-import org.tango.client.ez.proxy.TangoAttributeInfoWrapper;
-import org.tango.client.ez.proxy.TangoProxies;
-import org.tango.client.ez.proxy.TangoProxy;
-import org.tango.client.ez.proxy.TangoProxyException;
+import org.tango.client.ez.proxy.*;
 import org.tango.client.ez.util.TangoUtils;
 
 import java.io.File;
@@ -84,6 +81,7 @@ public class IDLDeviceProxy {
     static {
         // :)
         printVersion();
+        System.out.println("Log output file: " + LoggerConfiguration.DEFAULT_LOG_FILE);
     }
 
     /**
@@ -310,7 +308,10 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, double value) {
         logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
         try {
-            return proxy.executeCommand(command, value);
+            TangoCommandInfoWrapper info = proxy.getCommandInfo(command);
+            Object converted = ConvertUtils.convert(value, info.getArginType());
+            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getArginType().getSimpleName());
+            return proxy.executeCommand(command, converted);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -379,7 +380,10 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, long value) {
         logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
         try {
-            return proxy.executeCommand(command, value);
+            TangoCommandInfoWrapper info = proxy.getCommandInfo(command);
+            Object converted = ConvertUtils.convert(value, info.getArginType());
+            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getArginType().getSimpleName());
+            return proxy.executeCommand(command, converted);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -402,7 +406,10 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, short value) {
         logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
         try {
-            return proxy.executeCommand(command, value);
+            TangoCommandInfoWrapper info = proxy.getCommandInfo(command);
+            Object converted = ConvertUtils.convert(value, info.getArginType());
+            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getArginType().getSimpleName());
+            return proxy.executeCommand(command, converted);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -425,7 +432,10 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, float value) {
         logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
         try {
-            return proxy.executeCommand(command, value);
+            TangoCommandInfoWrapper info = proxy.getCommandInfo(command);
+            Object converted = ConvertUtils.convert(value, info.getArginType());
+            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getArginType().getSimpleName());
+            return proxy.executeCommand(command, converted);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -448,7 +458,10 @@ public class IDLDeviceProxy {
     public Object executeCommand(String command, int value) {
         logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
         try {
-            return proxy.executeCommand(command, value);
+            TangoCommandInfoWrapper info = proxy.getCommandInfo(command);
+            Object converted = ConvertUtils.convert(value, info.getArginType());
+            logger.trace("Target value[={}] of type[={}]", String.valueOf(converted), info.getArginType().getSimpleName());
+            return proxy.executeCommand(command, converted);
         } catch (Exception e) {
             lastException.set(e);
             throw handler.handle(e);
@@ -515,23 +528,6 @@ public class IDLDeviceProxy {
      * @throws RuntimeException
      */
     public Object executeCommand(String command, short[] value) {
-        logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
-        try {
-            return proxy.executeCommand(command, value);
-        } catch (Exception e) {
-            lastException.set(e);
-            throw handler.handle(e);
-        }
-    }
-
-    /**
-     * Executes command with an input argument of type {@link boolean}
-     *
-     * @param command a command name
-     * @return an Object that represents command execution result or null if output is defined to DevVoid
-     * @throws RuntimeException
-     */
-    public Object executeCommand(String command, boolean value) {
         logger.trace("Executing command {}/{}({})", proxy.getName(), command, value);
         try {
             return proxy.executeCommand(command, value);

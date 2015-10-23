@@ -1,7 +1,7 @@
 
 pro TangoTestIDLClient
 
-  SETENV, 'IDLJAVAB_CONFIG=D:\Projects\hzg.wpn.projects\idl2tango\src\test\idl\idljavabrc'
+  SETENV, 'IDLJAVAB_CONFIG=D:\Projects\hzg.wpn.projects\idl2tango\target\idljavabrc'
   
   ; Create a StatusServer proxy
   joDeviceProxy = OBJ_NEW("IDLJavaObject$hzg_wpn_idl_IDLDeviceProxy", "hzg.wpn.idl.IDLDeviceProxy","tango://hzgcttest:10000/sys/tg_test/1")
@@ -15,6 +15,8 @@ pro TangoTestIDLClient
   joDeviceProxy->waitUntil, "RUNNING"
   
   joDeviceProxy->writeAttributeBoolean, "boolean_scalar", 1
+  
+  print, joDeviceProxy->executeCommand("DevDouble", 1)
   
   joDeviceProxy->writeAttribute, "double_scalar_w", 3.14
   joDeviceProxy->writeAttribute, "float_scalar", 3.14  
